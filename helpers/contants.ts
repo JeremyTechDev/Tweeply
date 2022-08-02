@@ -1,0 +1,2 @@
+export const TWEETS_REQUIRED_FIELDS = 'tweet.fields=id,created_at,text,attachments,entities,public_metrics'
+export const USER_REQUIRED_FIELDS = 'expansions=author_id&user.fields=id,name,profile_image_url,username,url'

@@ -1,5 +1,11 @@
 import express from 'express';
+import request from 'request';
 import Twit from 'twit';
+
+import {
+  TWEETS_REQUIRED_FIELDS,
+  USER_REQUIRED_FIELDS,
+} from '../helpers/contants';
 
 const router = express.Router();
 
@@ -9,26 +15,19 @@ router.get('/', (req, res, next) => {
     const { screenName } = req.cookies.userData;
     const { withReplies, limit = 100 } = req.query;
 
-    const authData = res.locals.authData as Twit.Options;
-    const T = new Twit(authData);
-
-    console.log(T.getAuth());
-
-    T.get(
-      'search/tweets',
+    request.get(
+      `https://api.twitter.com/2/tweets/search/recent?query=(from:${screenName}${
+        withReplies === '1' ? '' : ' -is:reply'
+      })&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&max_results=${limit}`,
       {
-        q: `(from:${screenName}) ${
-          withReplies === '1' ? '' : '-filter:replies'
-        }`,
-        tweet_mode: 'extended',
-        count: Number(limit),
+        headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
-      (err, result) => {
+      (err, _, body) => {
         if (err) {
           res.status(400).send(err);
         }
 
-        res.send(result);
+        res.send(body);
       },
     );
   } catch (error) {
@@ -41,25 +40,17 @@ router.get('/:tweetId', (req, res) => {
   try {
     const { tweetId } = req.params;
 
-    const authData = res.locals.authData as Twit.Options;
-    const T = new Twit(authData);
-
-    if (!tweetId) {
-      res.status(400).send('No `tweetId` was sent');
-    }
-
-    T.get(
-      'statuses/show',
+    request.get(
+      `https://api.twitter.com/2/tweets/${tweetId}/?${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}`,
       {
-        id: tweetId,
-        tweet_mode: 'extended',
+        headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
-      (err, result) => {
+      (err, _, body) => {
         if (err) {
           res.status(400).send(err);
         }
 
-        res.send(result);
+        res.send(body);
       },
     );
   } catch (error) {
@@ -67,6 +58,7 @@ router.get('/:tweetId', (req, res) => {
   }
 });
 
+// Delete tweet by id
 router.delete('/:tweetId', (req, res) => {
   try {
     const { tweetId } = req.params;
@@ -97,33 +89,25 @@ router.delete('/:tweetId', (req, res) => {
 });
 
 // Get replies of a tweet by its Id
-router.get('/:tweetId/replies', (req, res) => {
+router.get('/:tweetId/conversation', (req, res) => {
   try {
     const { tweetId } = req.params;
-    const { limit = 100 } = req.query;
-    const { screenName } = req.cookies.userData;
-
-    const authData = res.locals.authData as Twit.Options;
-    const T = new Twit(authData);
 
     if (!tweetId) {
       res.status(400).send('No `tweetId` was sent');
     }
 
-    T.get(
-      'search/tweets',
+    request.get(
+      `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}`,
       {
-        q: `(to:${screenName})`,
-        since_id: tweetId,
-        tweet_mode: 'extended',
-        count: Number(limit),
+        headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
-      (err, result) => {
+      (err, response, body) => {
         if (err) {
           res.status(400).send(err);
         }
 
-        res.send(result);
+        res.send(body);
       },
     );
   } catch (error) {
