@@ -15,7 +15,8 @@ const Tweet: FC<T> = ({ tweet, user }) => {
       <figure className="flex w-full">
         <Image
           alt="profile image"
-          className="rounded-full"
+          className="rounded-full -z-0"
+          objectFit="contain"
           height={50}
           loader={({ src }) => src}
           src={user.profile_image_url}
@@ -27,10 +28,10 @@ const Tweet: FC<T> = ({ tweet, user }) => {
         </figcaption>
       </figure>
 
-      <div className="my-1 text-left text-white">{tweet.text}</div>
+      <div className="my-1 text-left text-white whitespace-pre-wrap">{tweet.text}</div>
 
       <div className="my-1">
-        <ul className="flex justify-evenly">
+        <ul className="flex justify-between">
           <li title="Replies">💬 {tweet.public_metrics.reply_count}</li>
           <li title="Retweets">🔁 {tweet.public_metrics.retweet_count}</li>
           <li title="Quote Retweets">✏️ {tweet.public_metrics.quote_count}</li>

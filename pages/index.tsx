@@ -16,9 +16,9 @@ const Home: NextPage<T> = ({ tweets }) => {
 
   return (
     <main className="flex container mx-auto px-4">
-      <aside className="w-1/3 h-screen">
+      <aside className="w-1/3 h-screen overflow-y-auto">
         <nav className="text-sm font-medium text-center border-b dark:text-gray-400 dark:border-gray-700">
-          <ul className="flex flex-wrap justify-center -mb-px">
+          <ul className="sticky top-0 flex flex-wrap justify-center -mb-px bg-dark z-10">
             <li className="mr-2">
               <a
                 href="#"
@@ -54,7 +54,7 @@ const Home: NextPage<T> = ({ tweets }) => {
         </nav>
       </aside>
 
-      <section className="w-2/3 h-screen">
+      <section className="w-2/3 h-screen overflow-y-auto">
         <Shortcuts />
         <Replies selectedTweetId={selectedTweetId} />
       </section>
