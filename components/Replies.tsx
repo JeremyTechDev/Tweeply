@@ -9,9 +9,10 @@ import Tweet from './Tweet';
 
 interface T {
   selectedTweetId: string | null;
+  isActive: boolean;
 }
 
-const Replies: FC<T> = ({ selectedTweetId }) => {
+const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
   const [replies, setReplies] = useState<ConversationResponse>();
   const [selectedReplyIndex, setSelectedReplyIndex] = useState<number>(0);
   const [isError, setIsError] = useState(false);
@@ -20,28 +21,33 @@ const Replies: FC<T> = ({ selectedTweetId }) => {
   useHotkeys(
     'up',
     () => {
-      setSelectedReplyIndex((prev) => {
-        if (prev > 0) {
-          return prev - 1;
-        }
-        return 0;
-      });
+      if (isActive) {
+        setSelectedReplyIndex((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          }
+          return 0;
+        });
+      }
     },
     HOTKEY_OPTIONS,
+    [isActive],
   );
   useHotkeys(
     'down',
     () => {
-      setSelectedReplyIndex((prev) => {
-        const maxIndex = replies?.meta?.result_count as number;
-        if (prev < maxIndex - 1) {
-          return prev + 1;
-        }
-        return maxIndex - 1;
-      });
+      if (isActive) {
+        setSelectedReplyIndex((prev) => {
+          const maxIndex = replies?.meta?.result_count as number;
+          if (prev < maxIndex - 1) {
+            return prev + 1;
+          }
+          return maxIndex - 1;
+        });
+      }
     },
     HOTKEY_OPTIONS,
-    [replies?.meta?.result_count],
+    [isActive, replies?.meta?.result_count],
   );
 
   useEffect(() => {
@@ -103,14 +109,14 @@ const Replies: FC<T> = ({ selectedTweetId }) => {
   return (
     <ul>
       {replies?.data.map((reply, i) => {
-        const isActive = i === selectedReplyIndex;
+        const isReplyActive = i === selectedReplyIndex && isActive;
 
         return (
           <li
             onClick={() => setSelectedReplyIndex(i)}
             key={reply.id}
             className={`flex my-8 p-2 rounded-lg ${
-              isActive ? 'bg-accent bg-opacity-80' : ''
+              isReplyActive ? 'bg-accent bg-opacity-80' : ''
             }`}
           >
             <div className="w-1/2">
@@ -124,7 +130,7 @@ const Replies: FC<T> = ({ selectedTweetId }) => {
               />
             </div>
 
-            <ReplyTextArea tweetId={reply.id} isActive={isActive} />
+            <ReplyTextArea tweetId={reply.id} isActive={isReplyActive} />
           </li>
         );
       })}

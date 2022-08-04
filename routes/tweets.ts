@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 // Get list of recent tweets
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   try {
     const { screenName } = req.cookies.userData;
     const { withReplies, limit = 100 } = req.query;

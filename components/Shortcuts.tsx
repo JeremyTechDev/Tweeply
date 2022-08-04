@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import { SHORTCUTS } from '../helpers/contants';
 
-const Shortcuts = () => {
+interface T {
+  bgColor: string;
+}
+
+const Shortcuts: FC<T> = ({ bgColor }) => {
   return (
-    <div className="w-full bg-gray-700 rounded-xl my-8 py-4 px-8 z-10">
+    <div className={`w-full ${bgColor} rounded-xl my-8 py-4 px-8 z-10`}>
       <h3 className="text-2xl">Keyboard Shortcuts:</h3>
       <ul className="mt-4">
         {SHORTCUTS.map((shortcut) => {
