@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { NextPage } from 'next';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -13,7 +14,6 @@ interface T {
 }
 
 const Home: NextPage<T> = ({ tweets }) => {
-  const [tab, setTab] = useState<'tweets' | 'tweets&replies'>('tweets');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
   const [selectedTab, setSelectedTab] = useState<'tweets' | 'replies'>(
     'tweets',
@@ -68,23 +68,14 @@ const Home: NextPage<T> = ({ tweets }) => {
             }`}
           >
             <li className="mr-2">
-              <a
-                href="#"
-                className={tab === 'tweets' ? 'active-tab' : 'tab'}
-                onClick={() => setTab('tweets')}
-              >
-                Tweets
-              </a>
+              <Link href="/" passHref>
+                <a className="active-tab">Tweets</a>
+              </Link>
             </li>
             <li className="mr-2">
-              <a
-                href="#"
-                className={tab === 'tweets&replies' ? 'active-tab' : 'tab'}
-                onClick={() => setTab('tweets&replies')}
-                aria-current="page"
-              >
-                Tweets & Replies
-              </a>
+              <Link href="/?include-replies=true" passHref>
+                <a className="tab">Tweets & Replies</a>
+              </Link>
             </li>
           </ul>
 
@@ -102,7 +93,11 @@ const Home: NextPage<T> = ({ tweets }) => {
                   }`}
                   onClick={() => setSelectedTweetIndex(i)}
                 >
-                  <Tweet tweet={tweet} user={tweets.includes.users[0]} />
+                  <Tweet
+                    tweet={tweet}
+                    user={tweets.includes.users[0]}
+                    media={tweets.includes.media}
+                  />
                 </li>
               );
             })}
@@ -130,6 +125,7 @@ const Home: NextPage<T> = ({ tweets }) => {
 
 export async function getServerSideProps({ req }) {
   try {
+    console.log('this runs again');
     const res = await fetch('http://localhost:3000/api/tweets', {
       headers: { cookie: req.headers.cookie },
     });

@@ -1,14 +1,16 @@
 import React, { FC } from 'react';
 import Image from 'next/image';
+import twitterText from 'twitter-text';
 
-import { iTweet, iUser } from '../@types';
+import { iTweet, iUser, RecentTweetsResponse } from '../@types';
 
 interface T {
   tweet: iTweet;
   user: iUser;
+  media: RecentTweetsResponse['includes']['media'];
 }
 
-const Tweet: FC<T> = ({ tweet, user }) => {
+const Tweet: FC<T> = ({ tweet, user, media }) => {
   return (
     <article className="flex flex-col py-2 px-4">
       <figure className="flex w-full items-center">
@@ -29,9 +31,43 @@ const Tweet: FC<T> = ({ tweet, user }) => {
         </figcaption>
       </figure>
 
-      <div className="my-1 text-left text-white whitespace-pre-wrap">
-        {tweet.text}
-      </div>
+      <div
+        className="my-1 text-left text-white whitespace-pre-wrap"
+        dangerouslySetInnerHTML={{
+          __html: twitterText.autoLink(twitterText.htmlEscape(tweet.text), {
+            usernameClass: 'text-accent hover:underline',
+            hashtagClass: 'text-accent hover:underline',
+            cashtagClass: 'text-accent hover:underline',
+            usernameIncludeSymbol: true,
+            targetBlank: true,
+          }),
+        }}
+      />
+
+      {Boolean(tweet.attachments?.media_keys) && (
+        <ul className="w-full flex">
+          {media?.map((attachment) => {
+            if (tweet.attachments?.media_keys?.includes(attachment.media_key)) {
+              return (
+                <li className="m-px" key={attachment.media_key}>
+                  <Image
+                    src={
+                      attachment.url || (attachment.preview_image_url as string)
+                    }
+                    className="rounded-md"
+                    objectFit="cover"
+                    width={150}
+                    height={150}
+                    alt={attachment.alt_text}
+                    loader={({ src }) => src}
+                  />
+                </li>
+              );
+            }
+            return null;
+          })}
+        </ul>
+      )}
 
       <div className="my-1">
         <ul className="flex justify-between text-gray-300">

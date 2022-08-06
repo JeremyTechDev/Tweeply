@@ -23,7 +23,8 @@
     "react-hotkeys-hook": "^3.4.7",
     "request": "^2.88.2",
     "simple-get": "^4.0.1",
-    "twit": "^2.2.11"
+    "twit": "^2.2.11",
+    "twitter-text": "^3.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -31,6 +32,7 @@
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
     "@types/request": "^2.48.8",
+    "@types/twitter-text": "^3.1.2",
     "autoprefixer": "^10.4.8",
     "concurrently": "^7.3.0",
     "eslint": "8.20.0",

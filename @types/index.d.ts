@@ -64,6 +64,13 @@ export type RecentTweetsResponse = {
     };
   }>;
   includes: {
+    media: Array<{
+      media_key: string;
+      type: string;
+      alt_text: string;
+      url?: string;
+      preview_image_url?: string;
+    }>;
     users: Array<{
       profile_image_url: string;
       name: string;
@@ -101,6 +108,13 @@ export type ConversationResponse = {
         end: number;
         username: string;
         id: string;
+      }>;
+      annotations?: Array<{
+        start: number;
+        end: number;
+        probability: number;
+        type: string;
+        normalized_text: string;
       }>;
       urls?: Array<{
         start: number;
@@ -203,6 +217,13 @@ export type SingleTweetResponse = {
     id: string;
   };
   includes: {
+    media: Array<{
+      media_key: string;
+      type: string;
+      alt_text: string;
+      url?: string;
+      preview_image_url?: string;
+    }>;
     users: Array<{
       username: string;
       name: string;

@@ -1,8 +1,9 @@
 import { Options } from 'react-hotkeys-hook';
 
-export const EXPANSIONS = 'expansions=author_id,referenced_tweets.id'
+export const EXPANSIONS =
+  'expansions=author_id,referenced_tweets.id,attachments.media_keys';
 export const TWEETS_REQUIRED_FIELDS =
-  'tweet.fields=id,created_at,text,attachments,entities,public_metrics,referenced_tweets';
+  'tweet.fields=id,created_at,text,attachments,entities,public_metrics,referenced_tweets&media.fields=preview_image_url,url,alt_text';
 export const USER_REQUIRED_FIELDS =
   'user.fields=id,name,profile_image_url,username,url';
 

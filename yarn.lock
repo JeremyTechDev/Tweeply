@@ -10,7 +10,7 @@
     core-js-pure "^3.20.2"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.18.9":
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.18.9", "@babel/runtime@^7.3.1":
   version "7.18.9"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.9.tgz#b4fcfce55db3d2e5e080d2490f608a3b9f407f4a"
   integrity sha512-lkqXDcvlFT5rvEjiu6+QYO+1GXrEHRo2LOtS7E4GtX5ESIZOgepqsZBVIj6Pv+a6zqsya9VCgiK1KAK4BvJDAw==
@@ -288,6 +288,11 @@
   dependencies:
     "@types/geojson" "*"
     "@types/node" "*"
+
+"@types/twitter-text@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@types/twitter-text/-/twitter-text-3.1.2.tgz#475ea9479033e26ab2308a566dc138df84c08f51"
+  integrity sha512-Erq1bw7v950rbPWjGLyMu5tuhXCrvFqBpaeoUNK0coCeihint2JaCXZBBf8EB9ajn9ZBLiY+Q50hBMb6ATZG3Q==
 
 "@typescript-eslint/parser@^5.21.0":
   version "5.30.7"
@@ -731,6 +736,11 @@ core-js-pure@^3.20.2:
   version "3.23.5"
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.23.5.tgz#23daaa9af9230e50f10b0fa4b8e6b87402be4c33"
   integrity sha512-8t78LdpKSuCq4pJYCYk8hl7XEkAX+BP16yRIwL3AanTksxuEf7CM83vRyctmiEL8NDZ3jpUcv56fk9/zG3aIuw==
+
+core-js@^2.5.0:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
+  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
 core-util-is@1.0.2:
   version "1.0.2"
@@ -2281,6 +2291,11 @@ pstree.remy@^1.1.8:
   resolved "https://registry.yarnpkg.com/pstree.remy/-/pstree.remy-1.1.8.tgz#c242224f4a67c21f686839bbdb4ac282b8373d3a"
   integrity sha512-77DZwxQmxKnu3aR542U+X8FypNzbfJ+C5XQDk3uWjWxn6151aIMGthWYRXTqT1E5oJvg+ljaa2OJi+VfvCOQ8w==
 
+punycode@1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
+  integrity sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==
+
 punycode@^2.1.0, punycode@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
@@ -2811,6 +2826,11 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
   integrity sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==
 
+twemoji-parser@^11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/twemoji-parser/-/twemoji-parser-11.0.2.tgz#24e87c2008abe8544c962f193b88b331de32b446"
+  integrity sha512-5kO2XCcpAql6zjdLwRwJjYvAZyDy3+Uj7v1ipBzLthQmDL7Ce19bEqHr3ImSNeoSW2OA8u02XmARbXHaNO8GhA==
+
 twit@^2.2.11:
   version "2.2.11"
   resolved "https://registry.yarnpkg.com/twit/-/twit-2.2.11.tgz#554343d1cf343ddf503280db821f61be5ab407c3"
@@ -2819,6 +2839,16 @@ twit@^2.2.11:
     bluebird "^3.1.5"
     mime "^1.3.4"
     request "^2.68.0"
+
+twitter-text@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/twitter-text/-/twitter-text-3.1.0.tgz#798e932b289f506efe2a1f03fe917ba30627f125"
+  integrity sha512-nulfUi3FN6z0LUjYipJid+eiwXvOLb8Ass7Jy/6zsXmZK3URte043m8fL3FyDzrK+WLpyqhHuR/TcARTN/iuGQ==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    core-js "^2.5.0"
+    punycode "1.4.1"
+    twemoji-parser "^11.0.2"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
