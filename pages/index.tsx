@@ -56,13 +56,14 @@ const Home: NextPage<T> = ({ tweets }) => {
   return (
     <main className="flex container mx-auto px-4">
       <aside
+        onClick={() => setSelectedTab('tweets')}
         className={`w-1/3 h-screen overflow-y-auto ${
           selectedTab === 'tweets' && 'bg-gray-700'
         }`}
       >
         <nav className="text-sm font-medium text-center border-b dark:text-gray-400 dark:border-gray-700">
           <ul
-            className={`sticky top-0 flex flex-wrap justify-center -mb-px z-10 bg-dark ${
+            className={`sticky top-0 flex flex-wrap justify-center -mb-px z-10 ${
               selectedTab === 'tweets' ? 'bg-gray-700' : 'bg-dark'
             }`}
           >
@@ -94,9 +95,12 @@ const Home: NextPage<T> = ({ tweets }) => {
               return (
                 <li
                   key={tweet.id}
-                  className={`rounded-md cursor-pointer ${
-                    isTweetActive ? 'bg-accent bg-opacity-80' : ''
+                  className={`my-8 rounded-md cursor-pointer hover:bg-gray-600 ${
+                    isTweetActive
+                      ? 'bg-accent bg-opacity-80 hover:bg-accent'
+                      : ''
                   }`}
+                  onClick={() => setSelectedTweetIndex(i)}
                 >
                   <Tweet tweet={tweet} user={tweets.includes.users[0]} />
                 </li>
@@ -110,6 +114,7 @@ const Home: NextPage<T> = ({ tweets }) => {
         className={`w-2/3 h-screen overflow-y-auto px-4 ${
           selectedTab === 'replies' && 'bg-gray-700'
         }`}
+        onClick={() => setSelectedTab('replies')}
       >
         <Shortcuts
           bgColor={selectedTab === 'replies' ? 'bg-dark' : 'bg-gray-700'}

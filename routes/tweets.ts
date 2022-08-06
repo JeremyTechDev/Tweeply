@@ -3,6 +3,7 @@ import request from 'request';
 import Twit from 'twit';
 
 import {
+  EXPANSIONS,
   TWEETS_REQUIRED_FIELDS,
   USER_REQUIRED_FIELDS,
 } from '../helpers/contants';
@@ -18,7 +19,7 @@ router.get('/', (req, res) => {
     request.get(
       `https://api.twitter.com/2/tweets/search/recent?query=(from:${screenName}${
         withReplies === '1' ? '' : ' -is:reply'
-      })&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&max_results=${limit}`,
+      })&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}&max_results=${limit}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
@@ -41,7 +42,7 @@ router.get('/:tweetId', (req, res) => {
     const { tweetId } = req.params;
 
     request.get(
-      `https://api.twitter.com/2/tweets/${tweetId}/?${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}`,
+      `https://api.twitter.com/2/tweets/${tweetId}/?${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
@@ -98,7 +99,7 @@ router.get('/:tweetId/conversation', (req, res) => {
     }
 
     request.get(
-      `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}`,
+      `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },

@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-import { ConversationResponse, SingleTweetResponse } from '../@types';
+import { ConversationResponse, iTweet, iUser } from '../@types';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
 import Alert from './Alert';
+import ReplyingTo from './ReplyingTo';
 import ReplyTextArea from './ReplyTextArea';
 import Tweet from './Tweet';
 
@@ -75,6 +76,26 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
       .finally(() => setIsLoading(false));
   }, [selectedTweetId]);
 
+  const tweetIdToTweetMap = useMemo(() => {
+    const map: { [key: string]: iTweet } = {};
+
+    replies?.data?.forEach((reply) => {
+      map[reply.id] = reply;
+    });
+
+    return map;
+  }, [replies]);
+
+  const userIdToUserMap = useMemo(() => {
+    const map: { [key: string]: iUser } = {};
+
+    replies?.includes?.users?.forEach((user) => {
+      map[user.id] = user;
+    });
+
+    return map;
+  }, [replies]);
+
   if (!selectedTweetId) {
     return (
       <Alert
@@ -110,27 +131,37 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
     <ul>
       {replies?.data.map((reply, i) => {
         const isReplyActive = i === selectedReplyIndex && isActive;
+        const replyingTo =
+          reply.referenced_tweets?.[0]?.type === 'replied_to'
+            ? tweetIdToTweetMap[reply.referenced_tweets?.[0]?.id]
+            : null;
 
         return (
           <li
             onClick={() => setSelectedReplyIndex(i)}
             key={reply.id}
-            className={`flex my-8 p-2 rounded-lg ${
-              isReplyActive ? 'bg-accent bg-opacity-80' : ''
+            className={`flex flex-col my-8 p-2 rounded-lg cursor-pointer ${
+              isReplyActive
+                ? 'bg-accent bg-opacity-80 hover:bg-accent'
+                : 'hover:bg-gray-500'
             }`}
           >
-            <div className="w-1/2">
-              <Tweet
-                tweet={reply}
-                user={
-                  replies.includes.users.find(
-                    (user) => user.id === reply.author_id,
-                  ) as SingleTweetResponse['includes']['users'][0]
-                }
+            {replyingTo && (
+              <ReplyingTo
+                tweet={replyingTo}
+                user={userIdToUserMap[replyingTo.author_id]}
               />
-            </div>
+            )}
 
-            <ReplyTextArea tweetId={reply.id} isActive={isReplyActive} />
+            <section className="flex">
+              <div className="w-1/2">
+                <Tweet tweet={reply} user={userIdToUserMap[reply.author_id]} />
+              </div>
+
+              <div className="w-1/2 relative">
+                <ReplyTextArea tweetId={reply.id} isActive={isReplyActive} />
+              </div>
+            </section>
           </li>
         );
       })}

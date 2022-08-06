@@ -1,9 +1,10 @@
 import { Options } from 'react-hotkeys-hook';
 
+export const EXPANSIONS = 'expansions=author_id,referenced_tweets.id'
 export const TWEETS_REQUIRED_FIELDS =
-  'tweet.fields=id,created_at,text,attachments,entities,public_metrics';
+  'tweet.fields=id,created_at,text,attachments,entities,public_metrics,referenced_tweets';
 export const USER_REQUIRED_FIELDS =
-  'expansions=author_id&user.fields=id,name,profile_image_url,username,url';
+  'user.fields=id,name,profile_image_url,username,url';
 
 export const HOTKEY_OPTIONS: Options = { enableOnTags: ['TEXTAREA'] };
 

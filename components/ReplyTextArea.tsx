@@ -17,7 +17,7 @@ const ReplyTextArea: FC<T> = ({ isActive, tweetId }) => {
   }, [isActive, ref]);
 
   return (
-    <div className="w-1/2 relative">
+    <>
       <textarea
         ref={ref}
         className="reply-textarea"
@@ -34,7 +34,7 @@ const ReplyTextArea: FC<T> = ({ isActive, tweetId }) => {
       )}
 
       {isActive && <ShortcutsListener tweetId={tweetId} value={value} />}
-    </div>
+    </>
   );
 };
 
