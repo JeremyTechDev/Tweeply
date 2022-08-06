@@ -11,35 +11,35 @@ export const HOTKEY_OPTIONS: Options = { enableOnTags: ['TEXTAREA'] };
 
 export const SHORTCUTS = [
   {
-    keys: 'cmd+shift+l',
+    keys: 'cmd+shift+l, ctrl+shift+l',
     displayKeys: '⌘ + Shift + L',
     label: 'Like',
   },
   {
-    keys: 'cmd+enter',
+    keys: 'cmd+enter, ctrl+enter',
     displayKeys: '⌘ + Enter',
     label: 'Reply',
   },
   {
-    keys: 'cmd+shift+enter',
+    keys: 'cmd+shift+enter, ctrl+shift+enter',
     displayKeys: '⌘ + Shift + Enter',
     label: 'Reply & Like',
   },
   {
-    keys: 'cmd+shift+r',
+    keys: 'cmd+shift+r, ctrl+shift+r',
     displayKeys: '⌘ + Shift + R',
     label: 'Retweet',
   },
-  {
-    keys: 'cmd+shift+u',
-    displayKeys: '⌘ + Shift + U',
-    label: 'Quote Retweet',
-  },
-  {
-    keys: 'cmd+k',
-    displayKeys: '⌘ + K',
-    label: 'Skip',
-  },
+  // {
+  //   keys: 'cmd+shift+u',
+  //   displayKeys: '⌘ + Shift + U',
+  //   label: 'Quote Retweet',
+  // },
+  // {
+  //   keys: 'cmd+k',
+  //   displayKeys: '⌘ + K',
+  //   label: 'Skip',
+  // },
 ];
 
 export const SHORTCUT_KEYS = {
@@ -47,6 +47,6 @@ export const SHORTCUT_KEYS = {
   reply: SHORTCUTS[1].keys,
   replyAndLike: SHORTCUTS[2].keys,
   retweet: SHORTCUTS[3].keys,
-  quote: SHORTCUTS[4].keys,
-  skip: SHORTCUTS[5].keys,
+  // quote: SHORTCUTS[4].keys,
+  // skip: SHORTCUTS[5].keys,
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { NextPage } from 'next';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { Toaster } from 'react-hot-toast';
 
 import { RecentTweetsResponse } from '../@types/index';
 import Tweet from '../components/Tweet';
@@ -119,22 +120,23 @@ const Home: NextPage<T> = ({ tweets }) => {
           isActive={selectedTab === 'replies'}
         />
       </section>
+
+      <Toaster />
     </main>
   );
 };
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req, res }) {
   try {
-    console.log('this runs again');
-    const res = await fetch('http://localhost:3000/api/tweets', {
+    const response = await fetch('http://localhost:3000/api/tweets', {
       headers: { cookie: req.headers.cookie },
     });
 
-    if (res.status !== 200) {
-      return { props: { tweets: [] } };
+    if (response.status === 401) {
+      return res.redirect('/api/auth/token?redirect=1');
     }
 
-    const tweets = await res.json();
+    const tweets = await response.json();
 
     return { props: { tweets } };
   } catch (error) {

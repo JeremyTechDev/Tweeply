@@ -32,7 +32,7 @@ router.get('/', (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -55,7 +55,7 @@ router.get('/:tweetId', (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -85,7 +85,7 @@ router.delete('/:tweetId', (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -112,7 +112,7 @@ router.get('/:tweetId/conversation', (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -144,7 +144,7 @@ router.post('/:tweetId/replies', (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -168,7 +168,7 @@ router.post('/:tweetId/like', (req, res) => {
       res.send(result);
     });
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -192,7 +192,7 @@ router.delete('/:tweetId/like', (req, res) => {
       res.send(result);
     });
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 

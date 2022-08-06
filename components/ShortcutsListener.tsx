@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import toast, { ToastOptions } from 'react-hot-toast';
 
 import { SHORTCUT_KEYS, HOTKEY_OPTIONS } from '../helpers/contants';
 
@@ -8,43 +9,60 @@ interface T {
   value?: string;
 }
 
+const TOAST_OPTIONS: ToastOptions = {
+  duration: 2000,
+  position: 'bottom-right',
+  style: {
+    borderRadius: '10px',
+    background: '#333',
+    color: '#fff',
+  },
+};
+
 const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
   useHotkeys(
     SHORTCUT_KEYS.like,
-    () => console.log('LIKE', tweetId, value),
+    (e) => {
+      e.preventDefault();
+      toast.success('Tweet liked', TOAST_OPTIONS);
+    },
     HOTKEY_OPTIONS,
   );
   useHotkeys(
     SHORTCUT_KEYS.reply,
-    () => console.log('REPLY', tweetId, value),
+    () => {
+      toast.success('Reply sent', TOAST_OPTIONS);
+    },
     HOTKEY_OPTIONS,
   );
   useHotkeys(
     SHORTCUT_KEYS.replyAndLike,
-    () => console.log('REPLY & LIKE', tweetId, value),
+    () => {
+      toast.success('Tweet liked & reply sent', TOAST_OPTIONS);
+    },
     HOTKEY_OPTIONS,
   );
   useHotkeys(
     SHORTCUT_KEYS.retweet,
     (e) => {
       e.preventDefault();
-      console.log('RETWEET', tweetId, value);
+      toast.success('Retweeted', TOAST_OPTIONS);
     },
     HOTKEY_OPTIONS,
   );
-  useHotkeys(
-    SHORTCUT_KEYS.quote,
-    (e) => {
-      e.preventDefault();
-      console.log('QUOTE', tweetId, value);
-    },
-    HOTKEY_OPTIONS,
-  );
-  useHotkeys(
-    SHORTCUT_KEYS.skip,
-    () => console.log('SKIP', tweetId, value),
-    HOTKEY_OPTIONS,
-  );
+  // useHotkeys(
+  //   SHORTCUT_KEYS.quote,
+  //   (e) => {
+  //     e.preventDefault();
+  //   },
+  //   HOTKEY_OPTIONS,
+  // );
+  // useHotkeys(
+  //   SHORTCUT_KEYS.skip,
+  //   () => {
+  //   },
+  //   HOTKEY_OPTIONS,
+  // );
 
   return null;
 };

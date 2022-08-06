@@ -49,7 +49,6 @@ router.get('/token', async (req, res) => {
         const urlResponse = new URLSearchParams(data.toString());
         const token = urlResponse.get('oauth_token');
         const tokenSecret = urlResponse.get('oauth_token_secret');
-        // const callbackConfirmed = urlResponse.get('oauth_callback_confirmed');
 
         const url = `${TWITTER_AUTH_URL}?oauth_token=${token}`;
 
@@ -61,7 +60,7 @@ router.get('/token', async (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 });
 
@@ -69,8 +68,6 @@ router.get('/twitter-callback', (req, res) => {
   try {
     const { oauth_token, oauth_verifier } = req.query;
     const { tokenSecret } = req.cookies;
-
-    // return res.send(req.originalUrl);
 
     if (!oauth_token || !oauth_verifier || !tokenSecret) {
       return res.send(401);
@@ -105,12 +102,18 @@ router.get('/twitter-callback', (req, res) => {
         const userData = { screenName, userId, token, tokenSecret };
         res.cookie('userData', userData);
 
-        return res.send(userData);
+        return res.redirect('/');
       },
     );
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
+});
+
+router.get('/logout', (req, res) => {
+  res.clearCookie('userData');
+  res.clearCookie('tokenSecret');
+  return res.status(204).send({ message: 'Logout successful' });
 });
 
 export default router;

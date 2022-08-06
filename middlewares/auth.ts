@@ -3,13 +3,13 @@ import { RequestHandler } from 'express';
 const TWITTER_API_KEY = process.env.TWITTER_API_KEY as string;
 const TWITTER_API_SECRET = process.env.TWITTER_API_SECRET as string;
 
-// Checks that auth token and tokenSecret at set, returns status code 401 otherwise
+// Checks that auth token and tokenSecret at set, redirect to authenticate
 const authMiddleware: RequestHandler = (req, res, next) => {
   try {
-    const { token, tokenSecret } = req.cookies.userData;
+    const { token, tokenSecret } = req?.cookies?.userData || {};
 
     if (!token || !tokenSecret) {
-      return res.status(401).send({ error: 'Unauthorized' });
+      return res.status(401).send({ error: 'Not Authorized' });
     }
 
     const authData = {
@@ -22,7 +22,7 @@ const authMiddleware: RequestHandler = (req, res, next) => {
     res.locals.authData = authData;
     next();
   } catch (error) {
-    return res.status(500).send({ error: error?.toString() });
+    return res.status(500).send({ error });
   }
 };
 
