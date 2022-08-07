@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Image from 'next/image';
 import React, { FC } from 'react';
 import { iTweet, iUser } from '../@types';
@@ -14,7 +15,7 @@ const ReplyingTo: FC<T> = ({ tweet, user }) => {
 
       <div className="flex items-center">
         <Image
-          alt="profile image"
+          alt={`Profile picture of ${user.name}`}
           className="rounded-full -z-0"
           objectFit="contain"
           height={35}
@@ -24,7 +25,14 @@ const ReplyingTo: FC<T> = ({ tweet, user }) => {
         />
 
         <p className="ml-2">
-          {user.name} <span className="text-gray-400">@{user.username}</span>
+          {user.name}{' '}
+          <Link
+            href={`https://twitter.com/${user.username}`}
+            passHref
+            target="_blank"
+          >
+            <a className="text-gray-400 hover:underline">@{user.username}</a>
+          </Link>
         </p>
       </div>
 

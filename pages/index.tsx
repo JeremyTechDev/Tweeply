@@ -9,12 +9,14 @@ import Tweet from '../components/Tweet';
 import Shortcuts from '../components/Shortcuts';
 import Replies from '../components/Replies';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
+import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
 
 interface T {
   tweets: RecentTweetsResponse;
 }
 
 const Home: NextPage<T> = ({ tweets }) => {
+  const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
   const [selectedTab, setSelectedTab] = useState<'tweets' | 'replies'>(
     'tweets',
@@ -24,32 +26,18 @@ const Home: NextPage<T> = ({ tweets }) => {
   useHotkeys('left', () => setSelectedTab('tweets'), HOTKEY_OPTIONS);
   useHotkeys(
     'up',
-    () => {
-      if (selectedTab === 'tweets') {
-        setSelectedTweetIndex((prev) => {
-          if (prev > 0) {
-            return prev - 1;
-          }
-          return 0;
-        });
-      }
-    },
+    () => arrowUpControl(selectedTab === 'tweets', setSelectedTweetIndex),
     HOTKEY_OPTIONS,
     [selectedTab],
   );
   useHotkeys(
     'down',
-    () => {
-      if (selectedTab === 'tweets') {
-        setSelectedTweetIndex((prev) => {
-          const maxIndex = tweets?.meta?.result_count as number;
-          if (prev < maxIndex - 1) {
-            return prev + 1;
-          }
-          return maxIndex - 1;
-        });
-      }
-    },
+    () =>
+      arrowDownControl(
+        selectedTab === 'tweets',
+        setSelectedTweetIndex,
+        tweets?.meta?.result_count as number,
+      ),
     HOTKEY_OPTIONS,
     [selectedTab, tweets?.meta?.result_count],
   );
@@ -68,42 +56,51 @@ const Home: NextPage<T> = ({ tweets }) => {
               selectedTab === 'tweets' ? 'bg-gray-700' : 'bg-dark'
             }`}
           >
-            <li className="mr-2">
-              <Link href="/" passHref>
-                <a className="active-tab">Tweets</a>
-              </Link>
+            <li
+              onClick={() => setFilter('with-replies')}
+              className={`mr-2 ${filter === 'all' ? 'tab' : 'active-tab'}`}
+            >
+              With Replies
             </li>
-            <li className="mr-2">
-              <Link href="/?include-replies=true" passHref>
-                <a className="tab">Tweets & Replies</a>
-              </Link>
+            <li
+              onClick={() => setFilter('all')}
+              className={`mr-2 ${filter === 'all' ? 'active-tab' : 'tab'}`}
+            >
+              All Tweets
             </li>
           </ul>
+        </nav>
 
-          <ul className="mt-4 mx-2">
-            {tweets?.data?.map((tweet, i) => {
+        <ul className="mt-4 mx-2">
+          {tweets?.data
+            ?.filter((tweets) => {
+              if (filter === 'with-replies') {
+                return tweets.public_metrics.reply_count >= 1;
+              }
+              return true;
+            })
+            ?.map((tweet, i) => {
               const isTweetActive = i === selectedTweetIndex;
 
               return (
                 <li
                   key={tweet.id}
-                  className={`my-8 rounded-md cursor-pointer hover:bg-gray-600 ${
-                    isTweetActive
-                      ? 'bg-accent bg-opacity-80 hover:bg-accent'
-                      : ''
-                  }`}
                   onClick={() => setSelectedTweetIndex(i)}
+                  className={`my-8 rounded-md cursor-pointer hover:bg-accent hover:bg-opacity-50 ${
+                    isTweetActive ? 'tweet-selected' : ''
+                  }`}
                 >
-                  <Tweet
-                    tweet={tweet}
-                    user={tweets.includes.users[0]}
-                    media={tweets.includes.media}
-                  />
+                  <ul>
+                    <Tweet
+                      tweet={tweet}
+                      user={tweets.includes.users[0]}
+                      media={tweets.includes.media}
+                    />
+                  </ul>
                 </li>
               );
             })}
-          </ul>
-        </nav>
+        </ul>
       </aside>
 
       <section

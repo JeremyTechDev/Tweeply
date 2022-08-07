@@ -139,6 +139,13 @@ export type ConversationResponse = {
       id: string;
       url: string;
     }>;
+    media: Array<{
+      media_key: string;
+      type: string;
+      alt_text: string;
+      url?: string;
+      preview_image_url?: string;
+    }>;
     tweets: Array<{
       author_id: string;
       text: string;

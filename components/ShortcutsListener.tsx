@@ -8,19 +8,21 @@ import { postRequest } from '../helpers/fetch';
 interface T {
   tweetId: string;
   value?: string;
+  setStatus: (newStatus: string) => void;
 }
 
 const TOAST_OPTIONS: ToastOptions = {
   duration: 2000,
-  position: 'bottom-right',
+  position: 'top-right',
   style: {
     borderRadius: '10px',
-    background: '#333',
+    background: '#55acee', // accent
     color: '#fff',
+    fontWeight: 'bold',
   },
 };
 
-const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
+const ShortcutsListener: FC<T> = ({ value, tweetId, setStatus }) => {
   useHotkeys(
     SHORTCUT_KEYS.like,
     (e) => {
@@ -29,6 +31,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         .then((res) => {
           if (res.status === 200) {
             toast.success('Tweet liked', TOAST_OPTIONS);
+            setStatus('✅ Liked');
           } else {
             toast.error('Error linking the tweet', TOAST_OPTIONS);
           }
@@ -38,6 +41,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         });
     },
     HOTKEY_OPTIONS,
+    [value, tweetId],
   );
   useHotkeys(
     SHORTCUT_KEYS.reply,
@@ -47,6 +51,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         .then((res) => {
           if (res.status === 200) {
             toast.success('Reply sent', TOAST_OPTIONS);
+            setStatus('✅ Replied');
           } else {
             toast.error('Error sending the reply', TOAST_OPTIONS);
           }
@@ -56,6 +61,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         });
     },
     HOTKEY_OPTIONS,
+    [value, tweetId],
   );
   useHotkeys(
     SHORTCUT_KEYS.replyAndLike,
@@ -76,6 +82,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
               results[1].value.status === 200
             ) {
               toast.success('Liked & reply sent', TOAST_OPTIONS);
+              setStatus('✅ Liked & Replied');
             } else {
               toast.error(
                 'Ops, could not like or send the reply',
@@ -97,6 +104,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         });
     },
     HOTKEY_OPTIONS,
+    [value, tweetId],
   );
   useHotkeys(
     SHORTCUT_KEYS.retweet,
@@ -106,6 +114,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         .then((res) => {
           if (res.status === 200) {
             toast.success('Retweeted', TOAST_OPTIONS);
+            setStatus('✅ Retweeted');
           } else {
             toast.error('Error sending the reply', TOAST_OPTIONS);
           }
@@ -115,6 +124,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
         });
     },
     HOTKEY_OPTIONS,
+    [value, tweetId],
   );
   // useHotkeys(
   //   SHORTCUT_KEYS.quote,

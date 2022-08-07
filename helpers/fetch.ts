@@ -5,9 +5,13 @@ const BASE_URL =
 
 type methodType = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
-const requestOptions = (data: object, method?: methodType): RequestInit => ({
+const requestOptions = (
+  data: object,
+  method?: methodType,
+  headers?: object,
+): RequestInit => ({
   method: method || 'POST',
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json', ...headers },
   ...(method !== 'GET' && { body: JSON.stringify(data) }),
 });
 

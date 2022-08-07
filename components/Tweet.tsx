@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import twitterText from 'twitter-text';
 
@@ -16,9 +17,9 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
       <figure className="flex w-full items-center">
         <figure>
           <Image
-            alt="profile image"
+            alt={`Profile picture of ${user.name}`}
             className="rounded-full -z-0"
-            objectFit="contain"
+            objectFit="cover"
             height={50}
             loader={({ src }) => src}
             src={user.profile_image_url}
@@ -27,7 +28,13 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
         </figure>
         <figcaption className="text-left ml-2">
           <h5 className="text-lg text-white">{user.name}</h5>
-          <p className="text-gray-300">@{user.username}</p>
+          <Link
+            passHref
+            target="_blank"
+            href={`https://twitter.com/${user.username}`}
+          >
+            <a className="text-gray-300 hover:underline">@{user.username}</a>
+          </Link>
         </figcaption>
       </figure>
 

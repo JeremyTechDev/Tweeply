@@ -2,6 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { ConversationResponse, iTweet, iUser } from '../@types';
+import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
 import Alert from './Alert';
 import ReplyingTo from './ReplyingTo';
@@ -21,35 +22,20 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
 
   useHotkeys(
     'up',
-    () => {
-      if (isActive) {
-        setSelectedReplyIndex((prev) => {
-          if (prev > 0) {
-            return prev - 1;
-          }
-          return 0;
-        });
-      }
-    },
+    () => arrowUpControl(isActive, setSelectedReplyIndex),
     HOTKEY_OPTIONS,
     [isActive],
   );
-  useHotkeys(
-    'down',
-    () => {
-      if (isActive) {
-        setSelectedReplyIndex((prev) => {
-          const maxIndex = replies?.meta?.result_count as number;
-          if (prev < maxIndex - 1) {
-            return prev + 1;
-          }
-          return maxIndex - 1;
-        });
-      }
-    },
-    HOTKEY_OPTIONS,
-    [isActive, replies?.meta?.result_count],
-  );
+  const handleArrowDown = () =>
+    arrowDownControl(
+      isActive,
+      setSelectedReplyIndex,
+      replies?.meta?.result_count as number,
+    );
+  useHotkeys('down', handleArrowDown, HOTKEY_OPTIONS, [
+    isActive,
+    replies?.meta?.result_count,
+  ]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -128,7 +114,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
   }
 
   return (
-    <ul>
+    <div>
       {replies?.data.map((reply, i) => {
         const isReplyActive = i === selectedReplyIndex && isActive;
         const replyingTo =
@@ -138,34 +124,42 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
 
         return (
           <li
-            onClick={() => setSelectedReplyIndex(i)}
             key={reply.id}
-            className={`flex flex-col my-8 p-2 rounded-lg cursor-pointer ${
-              isReplyActive
-                ? 'bg-accent bg-opacity-80 hover:bg-accent'
-                : 'hover:bg-gray-500'
+            onClick={() => setSelectedReplyIndex(i)}
+            className={`flex flex-col my-8 p-2 rounded-lg cursor-pointer hover:bg-accent hover:bg-opacity-50 ${
+              isReplyActive ? 'tweet-selected' : ''
             }`}
           >
-            {replyingTo && (
-              <ReplyingTo
-                tweet={replyingTo}
-                user={userIdToUserMap[replyingTo.author_id]}
-              />
-            )}
+            <ul>
+              {replyingTo && (
+                <ReplyingTo
+                  tweet={replyingTo}
+                  user={userIdToUserMap[replyingTo.author_id]}
+                />
+              )}
 
-            <section className="flex">
-              <div className="w-1/2">
-                <Tweet tweet={reply} user={userIdToUserMap[reply.author_id]} />
-              </div>
+              <section className="flex">
+                <div className="w-1/2">
+                  <Tweet
+                    tweet={reply}
+                    user={userIdToUserMap[reply.author_id]}
+                    media={replies.includes.media}
+                  />
+                </div>
 
-              <div className="w-1/2 relative">
-                <ReplyTextArea tweetId={reply.id} isActive={isReplyActive} />
-              </div>
-            </section>
+                <div className="w-1/2 relative">
+                  <ReplyTextArea
+                    tweetId={reply.id}
+                    isActive={isReplyActive}
+                    handleGoToNextReply={handleArrowDown}
+                  />
+                </div>
+              </section>
+            </ul>
           </li>
         );
       })}
-    </ul>
+    </div>
   );
 };
 
