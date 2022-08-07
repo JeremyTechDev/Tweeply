@@ -3,6 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import toast, { ToastOptions } from 'react-hot-toast';
 
 import { SHORTCUT_KEYS, HOTKEY_OPTIONS } from '../helpers/contants';
+import { postRequest } from '../helpers/fetch';
 
 interface T {
   tweetId: string;
@@ -24,21 +25,76 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
     SHORTCUT_KEYS.like,
     (e) => {
       e.preventDefault();
-      toast.success('Tweet liked', TOAST_OPTIONS);
+      postRequest(`/tweets/${tweetId}/like`)
+        .then((res) => {
+          if (res.status === 200) {
+            toast.success('Tweet liked', TOAST_OPTIONS);
+          } else {
+            toast.error('Error linking the tweet', TOAST_OPTIONS);
+          }
+        })
+        .catch(() => {
+          toast.error('Ops, something went wrong', TOAST_OPTIONS);
+        });
     },
     HOTKEY_OPTIONS,
   );
   useHotkeys(
     SHORTCUT_KEYS.reply,
-    () => {
-      toast.success('Reply sent', TOAST_OPTIONS);
+    (e) => {
+      e.preventDefault();
+      postRequest(`/tweets/${tweetId}/conversation`, { replyContent: value })
+        .then((res) => {
+          if (res.status === 200) {
+            toast.success('Reply sent', TOAST_OPTIONS);
+          } else {
+            toast.error('Error sending the reply', TOAST_OPTIONS);
+          }
+        })
+        .catch(() => {
+          toast.error('Ops, something went wrong', TOAST_OPTIONS);
+        });
     },
     HOTKEY_OPTIONS,
   );
   useHotkeys(
     SHORTCUT_KEYS.replyAndLike,
     () => {
-      toast.success('Tweet liked & reply sent', TOAST_OPTIONS);
+      const likePromise = postRequest(`/tweets/${tweetId}/like`);
+      const replyPromise = postRequest(`/tweets/${tweetId}/conversation`, {
+        replyContent: value,
+      });
+
+      Promise.allSettled([likePromise, replyPromise])
+        .then((results) => {
+          if (
+            results[0].status === 'fulfilled' &&
+            results[1].status === 'fulfilled'
+          ) {
+            if (
+              results[0].value.status === 200 &&
+              results[1].value.status === 200
+            ) {
+              toast.success('Liked & reply sent', TOAST_OPTIONS);
+            } else {
+              toast.error(
+                'Ops, could not like or send the reply',
+                TOAST_OPTIONS,
+              );
+            }
+          } else {
+            toast.error(
+              'Ops, your request could not be fulfilled',
+              TOAST_OPTIONS,
+            );
+          }
+        })
+        .catch(() => {
+          toast.error(
+            'Ops, something went wrong with the requests',
+            TOAST_OPTIONS,
+          );
+        });
     },
     HOTKEY_OPTIONS,
   );
@@ -46,7 +102,17 @@ const ShortcutsListener: FC<T> = ({ value, tweetId }) => {
     SHORTCUT_KEYS.retweet,
     (e) => {
       e.preventDefault();
-      toast.success('Retweeted', TOAST_OPTIONS);
+      postRequest(`/tweets/${tweetId}/retweet`)
+        .then((res) => {
+          if (res.status === 200) {
+            toast.success('Retweeted', TOAST_OPTIONS);
+          } else {
+            toast.error('Error sending the reply', TOAST_OPTIONS);
+          }
+        })
+        .catch(() => {
+          toast.error('Ops, something went wrong', TOAST_OPTIONS);
+        });
     },
     HOTKEY_OPTIONS,
   );

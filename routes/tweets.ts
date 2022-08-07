@@ -23,12 +23,12 @@ router.get('/', (req, res) => {
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
-      (err, _, body) => {
-        if (err) {
-          res.status(400).send(err);
+      (_, response, body) => {
+        if (response.statusCode !== 200) {
+          return res.status(400).send(body);
         }
 
-        res.send(body);
+        return res.send(body);
       },
     );
   } catch (error) {
@@ -41,47 +41,21 @@ router.get('/:tweetId', (req, res) => {
   try {
     const { tweetId } = req.params;
 
+    if (!tweetId) {
+      res.status(400).send({ error: 'No `tweetId` was sent' });
+    }
+
     request.get(
       `https://api.twitter.com/2/tweets/${tweetId}/?${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
-      (err, _, body) => {
-        if (err) {
-          res.status(400).send(err);
+      (_, response, body) => {
+        if (response.statusCode !== 200) {
+          return res.status(400).send(body);
         }
 
-        res.send(body);
-      },
-    );
-  } catch (error) {
-    return res.status(500).send({ error });
-  }
-});
-
-// Delete tweet by id
-router.delete('/:tweetId', (req, res) => {
-  try {
-    const { tweetId } = req.params;
-
-    const authData = res.locals.authData as Twit.Options;
-    const T = new Twit(authData);
-
-    if (!tweetId) {
-      res.status(400).send('No `tweetId` was sent');
-    }
-
-    T.post(
-      'statuses/destroy',
-      {
-        id: tweetId,
-      },
-      (err, result) => {
-        if (err) {
-          res.status(400).send(err);
-        }
-
-        res.send(result);
+        return res.send(body);
       },
     );
   } catch (error) {
@@ -95,7 +69,7 @@ router.get('/:tweetId/conversation', (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-      res.status(400).send('No `tweetId` was sent');
+      res.status(400).send({ error: 'No `tweetId` was sent' });
     }
 
     request.get(
@@ -104,8 +78,8 @@ router.get('/:tweetId/conversation', (req, res) => {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
       (err, response, body) => {
-        if (err) {
-          res.status(400).send(err);
+        if (response.statusCode !== 200) {
+          res.status(400).send({ error: err, data: body });
         }
 
         res.send(body);
@@ -116,17 +90,20 @@ router.get('/:tweetId/conversation', (req, res) => {
   }
 });
 
-router.post('/:tweetId/replies', (req, res) => {
+// Add reply on conversation with :tweetId
+router.post('/:tweetId/conversation', (req, res) => {
   try {
     const { tweetId } = req.params;
     const { replyContent } = req.body;
 
+    if (!tweetId || !replyContent) {
+      return res
+        .status(400)
+        .send({ error: 'No `tweetId` or `replyContent` was sent' });
+    }
+
     const authData = res.locals.authData as Twit.Options;
     const T = new Twit(authData);
-
-    if (!tweetId || !replyContent) {
-      res.status(400).send('No `tweetId` or `replyContent` was sent');
-    }
 
     T.post(
       'statuses/update',
@@ -135,12 +112,12 @@ router.post('/:tweetId/replies', (req, res) => {
         in_reply_to_status_id: tweetId,
         auto_populate_reply_metadata: true,
       },
-      (err, result) => {
-        if (err) {
-          res.status(400).send(err);
+      (_, body, response) => {
+        if (response.statusCode !== 200) {
+          return res.status(400).send(body);
         }
 
-        res.send(result);
+        return res.send(body);
       },
     );
   } catch (error) {
@@ -153,19 +130,20 @@ router.post('/:tweetId/like', (req, res) => {
   try {
     const { tweetId } = req.params;
 
-    const authData = res.locals.authData as Twit.Options;
-    const T = new Twit(authData);
-
     if (!tweetId) {
       res.status(400).send('No `tweetId` was sent');
     }
 
-    T.post('favorites/create', { id: tweetId }, (err, result) => {
-      if (err) {
-        res.status(400).send(err);
+    const authData = res.locals.authData as Twit.Options;
+    const T = new Twit(authData);
+
+    T.post('favorites/create', { id: tweetId }, (_, body, response) => {
+      if (response.statusCode !== 200 && response.statusCode !== 403) {
+        // 403 is already liked
+        return res.status(400).send(body);
       }
 
-      res.send(result);
+      return res.send(body);
     });
   } catch (error) {
     return res.status(500).send({ error });
@@ -177,19 +155,43 @@ router.delete('/:tweetId/like', (req, res) => {
   try {
     const { tweetId } = req.params;
 
+    if (!tweetId) {
+      res.status(400).send('No `tweetId` was sent');
+    }
+
     const authData = res.locals.authData as Twit.Options;
     const T = new Twit(authData);
+
+    T.post('favorites/destroy', { id: tweetId }, (_, body, response) => {
+      if (response.statusCode !== 200) {
+        return res.status(400).send(body);
+      }
+
+      return res.send(body);
+    });
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
+});
+
+// Retweet a tweet
+router.post('/:tweetId/retweet', (req, res) => {
+  try {
+    const { tweetId } = req.params;
 
     if (!tweetId) {
       res.status(400).send('No `tweetId` was sent');
     }
 
-    T.post('favorites/destroy', { id: tweetId }, (err, result) => {
-      if (err) {
-        res.status(400).send(err);
+    const authData = res.locals.authData as Twit.Options;
+    const T = new Twit(authData);
+
+    T.post('statuses/retweet', { id: tweetId }, (_, body, response) => {
+      if (response.statusCode !== 200) {
+        return res.status(400).send(body);
       }
 
-      res.send(result);
+      return res.send(body);
     });
   } catch (error) {
     return res.status(500).send({ error });
