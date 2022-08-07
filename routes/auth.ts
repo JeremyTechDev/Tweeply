@@ -110,7 +110,7 @@ router.get('/twitter-callback', (req, res) => {
   }
 });
 
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   res.clearCookie('userData');
   res.clearCookie('tokenSecret');
   return res.status(204).send({ message: 'Logout successful' });

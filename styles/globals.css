@@ -36,6 +36,6 @@ body {
   @apply bg-accent bg-opacity-20 border-2 border-accent border-opacity-30;
 }
 
-.tweet-hover {
-  @apply bg-accent bg-opacity-40;
+.tweet {
+  @apply rounded-lg cursor-pointer hover:bg-accent hover:bg-opacity-40;
 }

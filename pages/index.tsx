@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Toaster } from 'react-hot-toast';
@@ -10,17 +12,20 @@ import Shortcuts from '../components/Shortcuts';
 import Replies from '../components/Replies';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
 import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
+import { getRequest, postRequest } from '../helpers/fetch';
 
 interface T {
   tweets: RecentTweetsResponse;
 }
 
 const Home: NextPage<T> = ({ tweets }) => {
+  const router = useRouter();
   const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
   const [selectedTab, setSelectedTab] = useState<'tweets' | 'replies'>(
     'tweets',
   );
+  const user = tweets.includes.users?.[0];
 
   useHotkeys('right', () => setSelectedTab('replies'), HOTKEY_OPTIONS);
   useHotkeys('left', () => setSelectedTab('tweets'), HOTKEY_OPTIONS);
@@ -42,6 +47,20 @@ const Home: NextPage<T> = ({ tweets }) => {
     [selectedTab, tweets?.meta?.result_count],
   );
 
+  const handleLogout = () => {
+    postRequest('/auth/logout')
+      .then((res) => {
+        if (res.status === 204) {
+          router.push('/home');
+          localStorage.removeItem('sinceId');
+          localStorage.removeItem('sinceDate');
+        }
+      })
+      .catch(() =>
+        alert('Ops, something went wrong logging out, sorry for that'),
+      );
+  };
+
   return (
     <main className="flex container mx-auto px-4">
       <aside
@@ -50,6 +69,32 @@ const Home: NextPage<T> = ({ tweets }) => {
           selectedTab === 'tweets' && 'bg-gray-700'
         }`}
       >
+        <header className="flex p-4 justify-between items-center">
+          <h1 className="text-4xl font-bold text-accent">Tweeply</h1>
+
+          <div className="flex flex-col items-center text-sm">
+            <Image
+              alt={`Profile picture of ${user.name}`}
+              height={55}
+              loader={({ src }) => src}
+              src={user.profile_image_url}
+              unoptimized
+              width={55}
+              className="rounded-full"
+            />
+            <Link href={`https://twitter.com/${user.username}`} passHref>
+              <a className="hover:underline">@{user.username}</a>
+            </Link>
+            <button
+              title="Logout"
+              className="py-x px-1 rounded text-red-500 hover:bg-red-500 hover:bg-opacity-30"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+
         <nav className="text-sm font-medium text-center border-b dark:text-gray-400 dark:border-gray-700">
           <ul
             className={`sticky top-0 flex flex-wrap justify-center -mb-px z-10 ${
@@ -86,14 +131,14 @@ const Home: NextPage<T> = ({ tweets }) => {
                 <li
                   key={tweet.id}
                   onClick={() => setSelectedTweetIndex(i)}
-                  className={`my-8 rounded-md cursor-pointer hover:bg-accent hover:bg-opacity-50 ${
+                  className={`my-8 tweet ${
                     isTweetActive ? 'tweet-selected' : ''
                   }`}
                 >
                   <ul>
                     <Tweet
                       tweet={tweet}
-                      user={tweets.includes.users[0]}
+                      user={user}
                       media={tweets.includes.media}
                     />
                   </ul>
@@ -125,8 +170,8 @@ const Home: NextPage<T> = ({ tweets }) => {
 
 export async function getServerSideProps({ req, res }) {
   try {
-    const response = await fetch('http://localhost:3000/api/tweets', {
-      headers: { cookie: req.headers.cookie },
+    const response = await getRequest('/tweets', {
+      cookie: req.headers.cookie,
     });
 
     if (response.status === 401) {

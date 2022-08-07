@@ -67,13 +67,16 @@ router.get('/:tweetId', (req, res) => {
 router.get('/:tweetId/conversation', (req, res) => {
   try {
     const { tweetId } = req.params;
+    const { sinceId } = req.query;
 
     if (!tweetId) {
       res.status(400).send({ error: 'No `tweetId` was sent' });
     }
 
+    const sinceIdParam = sinceId ? `&since_id=${sinceId}` : '';
+
     request.get(
-      `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}`,
+      `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}${sinceIdParam}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },

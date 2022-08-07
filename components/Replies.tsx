@@ -4,6 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { ConversationResponse, iTweet, iUser } from '../@types';
 import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
+import { getRequest } from '../helpers/fetch';
 import Alert from './Alert';
 import ReplyingTo from './ReplyingTo';
 import ReplyTextArea from './ReplyTextArea';
@@ -46,7 +47,9 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
       return;
     }
 
-    fetch(`http://localhost:3000/api/tweets/${selectedTweetId}/conversation`)
+    const sinceId = localStorage.getItem('sinceId');
+    const sinceIdParam = sinceId ? `?sinceId=${sinceId}` : '';
+    getRequest(`/tweets/${selectedTweetId}/conversation/${sinceIdParam}`)
       .then((res) => {
         if (res.status === 200) {
           return res.json();
@@ -106,10 +109,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
 
   if (replies?.meta.result_count === 0) {
     return (
-      <Alert
-        title="😅"
-        subTitle="Ops! that tweet has no replies. Maybe try another one"
-      />
+      <Alert title="😉" subTitle="No new replies for this Tweet. Nice work!" />
     );
   }
 
@@ -126,7 +126,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
           <li
             key={reply.id}
             onClick={() => setSelectedReplyIndex(i)}
-            className={`flex flex-col my-8 p-2 rounded-lg cursor-pointer hover:bg-accent hover:bg-opacity-50 ${
+            className={`flex flex-col my-8 p-2 tweet ${
               isReplyActive ? 'tweet-selected' : ''
             }`}
           >
@@ -149,6 +149,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
 
                 <div className="w-1/2 relative">
                   <ReplyTextArea
+                    tweetDate={reply.created_at}
                     tweetId={reply.id}
                     isActive={isReplyActive}
                     handleGoToNextReply={handleArrowDown}
