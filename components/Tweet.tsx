@@ -19,10 +19,11 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
           <Image
             alt={`Profile picture of ${user.name}`}
             className="rounded-full -z-0"
-            objectFit="cover"
             height={50}
             loader={({ src }) => src}
+            objectFit="cover"
             src={user.profile_image_url}
+            unoptimized
             width={50}
           />
         </figure>
@@ -61,12 +62,13 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
                     src={
                       attachment.url || (attachment.preview_image_url as string)
                     }
-                    className="rounded-md"
-                    objectFit="cover"
-                    width={150}
-                    height={150}
                     alt={attachment.alt_text}
+                    className="rounded-md"
+                    height={150}
                     loader={({ src }) => src}
+                    objectFit="cover"
+                    unoptimized
+                    width={150}
                   />
                 </li>
               );

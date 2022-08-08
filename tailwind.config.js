@@ -13,6 +13,9 @@ module.exports = {
         light: '#ccd6dd',
         white: '#e1e8ed',
       },
+      fontFamily: {
+        display: ['League Spartan', 'sans-serif'],
+      },
     },
   },
   plugins: [],

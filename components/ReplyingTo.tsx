@@ -22,6 +22,7 @@ const ReplyingTo: FC<T> = ({ tweet, user }) => {
           loader={({ src }) => src}
           src={user.profile_image_url}
           width={35}
+          unoptimized
         />
 
         <p className="ml-2">
