@@ -61,6 +61,14 @@ const Home: NextPage<T> = ({ tweets }) => {
       );
   };
 
+  if (process.env.NODE_ENV === 'roduction') {
+    return (
+      <main className="h-screen flex justify-center items-center font-display text-4xl font-bold text-accent">
+        <p className="block">Coming soon</p>
+      </main>
+    );
+  }
+
   return (
     <main className="flex container mx-auto px-4">
       <aside
