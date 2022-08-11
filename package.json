@@ -7,7 +7,8 @@
     "start": "node dist/index.js",
     "dev": "nodemon -q dist/index.js",
     "tsc": "npx tsc",
-    "tsc:w": "npx tsc --watch"
+    "tsc:w": "npx tsc --watch",
+    "all": "npx tsc && node dist/index.js"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.3",
