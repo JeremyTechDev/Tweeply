@@ -43,8 +43,8 @@ class MyDocument extends Document {
           <meta property="og:description" content={this.subTitle} />
           <meta property="og:site_name" content="Tweeply-app.com" />
           <meta property="og:image" content={this.imgUrl} />
-          <meta property="og:image" content="https://askjere.com/frame.jpg" />
-          <meta property="og:url" content="https://tweeply-app.com/" />
+          <meta property="og:image" content="https://tweeply-app.herokuapp.com/frame.png" />
+          <meta property="og:url" content="https://tweeply-app.herokuapp.com" />
           <meta property="twitter:card" content="summary" />
           <meta property="twitter:site" content="@JeremyTechDev" />
           <meta property="twitter:title" content={this.title} />

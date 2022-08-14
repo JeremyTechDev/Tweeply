@@ -102,7 +102,7 @@ router.get('/twitter-callback', (req, res) => {
         const userData = { screenName, userId, token, tokenSecret };
         res.cookie('userData', userData);
 
-        return res.redirect('/');
+        return res.redirect('/home');
       },
     );
   } catch (error) {

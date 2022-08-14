@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -13,19 +13,27 @@ import Replies from '../components/Replies';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
 import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
 import { getRequest, postRequest } from '../helpers/fetch';
+import Alert from '../components/Alert';
 
 interface T {
-  tweets: RecentTweetsResponse;
+  tweets: RecentTweetsResponse | null;
+  redirect?: string;
 }
 
-const Home: NextPage<T> = ({ tweets }) => {
+const Home: NextPage<T> = ({ tweets, redirect }) => {
   const router = useRouter();
   const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
   const [selectedTab, setSelectedTab] = useState<'tweets' | 'replies'>(
     'tweets',
   );
-  const user = tweets.includes.users?.[0];
+
+  useEffect(() => {
+    if (redirect) {
+      router.push(redirect);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useHotkeys('right', () => setSelectedTab('replies'), HOTKEY_OPTIONS);
   useHotkeys('left', () => setSelectedTab('tweets'), HOTKEY_OPTIONS);
@@ -51,7 +59,7 @@ const Home: NextPage<T> = ({ tweets }) => {
     postRequest('/auth/logout')
       .then((res) => {
         if (res.status === 204) {
-          router.push('/home');
+          router.push('/');
           localStorage.removeItem('sinceId');
           localStorage.removeItem('sinceDate');
         }
@@ -61,12 +69,12 @@ const Home: NextPage<T> = ({ tweets }) => {
       );
   };
 
-  if (process.env.NODE_ENV === 'roduction') {
-    return (
-      <main className="h-screen flex justify-center items-center font-display text-4xl font-bold text-accent">
-        <p className="block">Coming soon</p>
-      </main>
-    );
+  const user = tweets?.includes?.users?.[0];
+  if (!user && !redirect) {
+    router.reload();
+  }
+  if (!user) {
+    return <Alert title="⏱" subTitle="Loading..." />;
   }
 
   return (
@@ -178,7 +186,7 @@ const Home: NextPage<T> = ({ tweets }) => {
   );
 };
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps({ req }) {
   try {
     const response = await getRequest('/tweets', {
       cookie: req.headers.cookie,
@@ -186,11 +194,10 @@ export async function getServerSideProps({ req, res }) {
 
     if (response.status === 401) {
       return {
-        redirect: {
-          permanent: false,
-          destination: '/api/auth/token?redirect=1',
+        props: {
+          redirect: '/api/auth/token?redirect=1',
+          tweets: null,
         },
-        props: {},
       };
     }
 
@@ -198,7 +205,7 @@ export async function getServerSideProps({ req, res }) {
 
     return { props: { tweets } };
   } catch (error) {
-    return { props: { tweets: [] } };
+    return { props: { tweets: null } };
   }
 }
 

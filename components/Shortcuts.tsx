@@ -13,7 +13,7 @@ const Shortcuts: FC<T> = ({ bgColor }) => {
       <ul className="mt-4">
         {SHORTCUTS.map((shortcut) => {
           return (
-            <li key={shortcut.keys} className="grid grid-cols-4">
+            <li key={shortcut.keys} className="grid grid-cols-3">
               <span>🎯 {shortcut.displayKeys}:</span>
               <span>{shortcut.label}</span>
             </li>

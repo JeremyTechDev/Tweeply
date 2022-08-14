@@ -1,7 +1,7 @@
 const BASE_URL =
-  process.env.ENV === 'production'
-    ? process.env.PRODUCTION_URL
-    : 'http://localhost:3000';
+  process.env.NODE_ENV === 'production'
+    ? 'https://tweeply-app.herokuapp.com/api'
+    : 'http://localhost:3000/api';
 
 type methodType = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
@@ -16,15 +16,15 @@ const requestOptions = (
 });
 
 export const getRequest = (url: string, headers?: HeadersInit) => {
-  return fetch(BASE_URL + '/api' + url, { headers });
+  return fetch(`${BASE_URL}${url}`, { headers });
 };
 
 export const postRequest = (url: string, data = {}, headers?: HeadersInit) => {
-  return fetch(BASE_URL + '/api' + url, requestOptions(data, 'POST', headers));
+  return fetch(`${BASE_URL}${url}`, requestOptions(data, 'POST', headers));
 };
 
 export const putRequest = (url: string, data = {}, headers?: HeadersInit) => {
-  return fetch(BASE_URL + '/api' + url, requestOptions(data, 'PUT', headers));
+  return fetch(`${BASE_URL}${url}`, requestOptions(data, 'PUT', headers));
 };
 
 export const deleteRequest = (
@@ -32,8 +32,5 @@ export const deleteRequest = (
   data = {},
   headers?: HeadersInit,
 ) => {
-  return fetch(
-    BASE_URL + '/api' + url,
-    requestOptions(data, 'DELETE', headers),
-  );
+  return fetch(`${BASE_URL}${url}`, requestOptions(data, 'DELETE', headers));
 };

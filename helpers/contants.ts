@@ -9,35 +9,36 @@ export const USER_REQUIRED_FIELDS =
 
 export const HOTKEY_OPTIONS: Options = { enableOnTags: ['TEXTAREA'] };
 
+
 export const SHORTCUTS = [
   {
     keys: 'cmd+shift+l, ctrl+shift+l',
-    displayKeys: '⌘ + Shift + L',
+    displayKeys: '⌘/ctrl + Shift + L',
     label: 'Like',
   },
   {
     keys: 'cmd+enter, ctrl+enter',
-    displayKeys: '⌘ + Enter',
+    displayKeys: '⌘/ctrl + Enter',
     label: 'Reply',
   },
   {
     keys: 'cmd+shift+enter, ctrl+shift+enter',
-    displayKeys: '⌘ + Shift + Enter',
+    displayKeys: '⌘/ctrl + Shift + Enter',
     label: 'Reply & Like',
   },
   {
     keys: 'cmd+shift+r, ctrl+shift+r',
-    displayKeys: '⌘ + Shift + R',
+    displayKeys: '⌘/ctrl + Shift + R',
     label: 'Retweet',
   },
   // {
   //   keys: 'cmd+shift+u',
-  //   displayKeys: '⌘ + Shift + U',
+  //   displayKeys: '⌘/ctrl + Shift + U',
   //   label: 'Quote Retweet',
   // },
   // {
   //   keys: 'cmd+k',
-  //   displayKeys: '⌘ + K',
+  //   displayKeys: '⌘/ctrl + K',
   //   label: 'Skip',
   // },
 ];

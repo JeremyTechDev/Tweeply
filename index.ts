@@ -14,12 +14,10 @@ const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
-console.log(process.env.HOST);
 const app = next({ dev: isDev, hostname: HOST, port: PORT });
 const appHandler = app.getRequestHandler();
 
 app.prepare().then(() => {
-  console.log('here');
   const server = express();
 
   server.use(express.json());
@@ -47,9 +45,8 @@ app.prepare().then(() => {
   }
 
   server.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+    console.log(`Server running on PORT ${PORT}`);
   });
 
-  console.log(server);
   return server;
 });

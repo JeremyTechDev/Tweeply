@@ -84,6 +84,17 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
           <li title="Retweets">🔁 {tweet.public_metrics.retweet_count}</li>
           <li title="Quote Retweets">✏️ {tweet.public_metrics.quote_count}</li>
           <li title="Likes">❤️ {tweet.public_metrics.like_count}</li>
+          <li title="Open on Twitter">
+            <Link
+              href={`https://twitter.com/${user.username}/statuses/${tweet.id}`}
+              target="_blank"
+              passHref
+            >
+              <a target="_blank" className="p-1 rounded hover:bg-accent">
+                🌐
+              </a>
+            </Link>
+          </li>
         </ul>
       </div>
     </article>
