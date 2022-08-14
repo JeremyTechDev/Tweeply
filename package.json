@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "yarn && tsc && next build",
+    "build": "npx tsc && npx next build",
     "start": "NODE_ENV=production node dist/index.js",
     "dev": "nodemon -q dist/index.js",
     "tsc": "npx tsc",
