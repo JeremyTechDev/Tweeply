@@ -11,13 +11,15 @@ import authMiddleware from './middlewares/auth';
 
 const isDev = process.env.NODE_ENV !== 'production';
 const PORT = Number(process.env.PORT) || 3000;
-const HOSTNAME = process.env.HOSTNAME || 'localhost';
+const HOST = process.env.HOST;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
-const app = next({ dev: isDev, hostname: HOSTNAME, port: PORT });
+console.log(process.env.HOST);
+const app = next({ dev: isDev, hostname: HOST, port: PORT });
 const appHandler = app.getRequestHandler();
 
 app.prepare().then(() => {
+  console.log('here');
   const server = express();
 
   server.use(express.json());
@@ -48,5 +50,6 @@ app.prepare().then(() => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
   });
 
+  console.log(server);
   return server;
 });

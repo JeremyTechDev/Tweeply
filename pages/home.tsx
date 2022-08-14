@@ -185,7 +185,13 @@ export async function getServerSideProps({ req, res }) {
     });
 
     if (response.status === 401) {
-      return res.redirect('/api/auth/token?redirect=1');
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/api/auth/token?redirect=1',
+        },
+        props: {},
+      };
     }
 
     const tweets = await response.json();
