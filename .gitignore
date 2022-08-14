@@ -34,7 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-/dist
+# /dist
 .env
 
 .vscode/
