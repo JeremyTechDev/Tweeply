@@ -29,12 +29,10 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
         </figure>
         <figcaption className="text-left ml-2">
           <h5 className="text-lg text-white">{user.name}</h5>
-          <Link
-            passHref
-            target="_blank"
-            href={`https://twitter.com/${user.username}`}
-          >
-            <a className="text-gray-300 hover:underline">@{user.username}</a>
+          <Link passHref href={`https://twitter.com/${user.username}`}>
+            <a target="_blank" className="text-gray-300 hover:underline">
+              @{user.username}
+            </a>
           </Link>
         </figcaption>
       </figure>
@@ -87,7 +85,6 @@ const Tweet: FC<T> = ({ tweet, user, media }) => {
           <li title="Open on Twitter">
             <Link
               href={`https://twitter.com/${user.username}/statuses/${tweet.id}`}
-              target="_blank"
               passHref
             >
               <a target="_blank" className="p-1 rounded hover:bg-accent">

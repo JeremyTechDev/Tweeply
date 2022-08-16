@@ -27,12 +27,10 @@ const ReplyingTo: FC<T> = ({ tweet, user }) => {
 
         <p className="ml-2">
           {user.name}{' '}
-          <Link
-            href={`https://twitter.com/${user.username}`}
-            passHref
-            target="_blank"
-          >
-            <a className="text-gray-400 hover:underline">@{user.username}</a>
+          <Link href={`https://twitter.com/${user.username}`} passHref>
+            <a target="_blank" className="text-gray-400 hover:underline">
+              @{user.username}
+            </a>
           </Link>
         </p>
       </div>

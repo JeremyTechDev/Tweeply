@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -16,17 +16,29 @@ import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
 import { getRequest, postRequest } from '../helpers/fetch';
 
 interface T {
-  tweets: RecentTweetsResponse | null;
+  tweetsData: RecentTweetsResponse | null;
   redirect?: string;
 }
 
-const Home: NextPage<T> = ({ tweets, redirect }) => {
+const Home: NextPage<T> = ({ tweetsData, redirect }) => {
   const router = useRouter();
   const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
   const [selectedTab, setSelectedTab] = useState<'tweets' | 'replies'>(
     'tweets',
   );
+
+  const tweets = useMemo(() => {
+    return (
+      tweetsData?.data?.filter((tweets) => {
+        if (filter === 'with-replies') {
+          return tweets.public_metrics.reply_count >= 1;
+        }
+
+        return true;
+      }) || []
+    );
+  }, [tweetsData, filter]);
 
   useEffect(() => {
     if (redirect) {
@@ -49,10 +61,10 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
       arrowDownControl(
         selectedTab === 'tweets',
         setSelectedTweetIndex,
-        tweets?.meta?.result_count as number,
+        tweetsData?.meta?.result_count as number,
       ),
     HOTKEY_OPTIONS,
-    [selectedTab, tweets?.meta?.result_count],
+    [selectedTab, tweetsData?.meta?.result_count],
   );
 
   const handleLogout = () => {
@@ -69,7 +81,7 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
       );
   };
 
-  if (tweets?.meta.result_count === 0) {
+  if (tweetsData?.meta.result_count === 0) {
     return (
       <>
         <Alert
@@ -86,7 +98,7 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
     );
   }
 
-  const user = tweets?.includes?.users?.[0];
+  const user = tweetsData?.includes?.users?.[0];
   if (!user && !redirect) {
     return (
       <>
@@ -166,7 +178,7 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
         </nav>
 
         <ul className="mt-4 mx-2">
-          {tweets?.data
+          {tweets
             ?.filter((tweets) => {
               if (filter === 'with-replies') {
                 return tweets.public_metrics.reply_count >= 1;
@@ -188,7 +200,7 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
                     <Tweet
                       tweet={tweet}
                       user={user}
-                      media={tweets.includes.media}
+                      media={tweetsData.includes.media}
                     />
                   </ul>
                 </li>
@@ -207,7 +219,8 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
           bgColor={selectedTab === 'replies' ? 'bg-dark' : 'bg-gray-700'}
         />
         <Replies
-          selectedTweetId={tweets.data[selectedTweetIndex].id}
+          userId={user.id}
+          selectedTweetId={tweets[selectedTweetIndex].id}
           isActive={selectedTab === 'replies'}
         />
       </section>
@@ -232,11 +245,11 @@ export async function getServerSideProps({ req }) {
       };
     }
 
-    const tweets = await response.json();
+    const tweetsData = await response.json();
 
-    return { props: { tweets } };
+    return { props: { tweetsData } };
   } catch (error) {
-    return { props: { tweets: null } };
+    return { props: { tweetsData: null } };
   }
 }
 

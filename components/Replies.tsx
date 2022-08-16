@@ -13,10 +13,12 @@ import Tweet from './Tweet';
 interface T {
   selectedTweetId: string | null;
   isActive: boolean;
+  userId: string;
 }
 
-const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
+const Replies: FC<T> = ({ selectedTweetId, isActive, userId }) => {
   const [replies, setReplies] = useState<ConversationResponse>();
+  const [hideSelfReplies, setHideSelfReplies] = useState(false);
   const [selectedReplyIndex, setSelectedReplyIndex] = useState<number>(0);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -115,51 +117,63 @@ const Replies: FC<T> = ({ selectedTweetId, isActive }) => {
 
   return (
     <div>
-      {replies?.data.map((reply, i) => {
-        const isReplyActive = i === selectedReplyIndex && isActive;
-        const replyingTo =
-          reply.referenced_tweets?.[0]?.type === 'replied_to'
-            ? tweetIdToTweetMap[reply.referenced_tweets?.[0]?.id]
-            : null;
+      <div className="flex justify-end">
+        <input
+          type="checkbox"
+          checked={hideSelfReplies}
+          onChange={() => setHideSelfReplies((prev) => !prev)}
+        />
+        Hide self-replies
+      </div>
+      {replies?.data
+        ?.filter((reply) =>
+          hideSelfReplies ? reply.author_id !== userId : true,
+        )
+        ?.map((reply, i) => {
+          const isReplyActive = i === selectedReplyIndex && isActive;
+          const replyingTo =
+            reply.referenced_tweets?.[0]?.type === 'replied_to'
+              ? tweetIdToTweetMap[reply.referenced_tweets?.[0]?.id]
+              : null;
 
-        return (
-          <li
-            key={reply.id}
-            onClick={() => setSelectedReplyIndex(i)}
-            className={`flex flex-col my-8 p-2 tweet ${
-              isReplyActive ? 'tweet-selected' : ''
-            }`}
-          >
-            <ul>
-              {replyingTo && (
-                <ReplyingTo
-                  tweet={replyingTo}
-                  user={userIdToUserMap[replyingTo.author_id]}
-                />
-              )}
-
-              <section className="flex">
-                <div className="w-1/2">
-                  <Tweet
-                    tweet={reply}
-                    user={userIdToUserMap[reply.author_id]}
-                    media={replies.includes.media}
+          return (
+            <li
+              key={reply.id}
+              onClick={() => setSelectedReplyIndex(i)}
+              className={`flex flex-col my-8 p-2 tweet ${
+                isReplyActive ? 'tweet-selected' : ''
+              }`}
+            >
+              <ul>
+                {replyingTo && (
+                  <ReplyingTo
+                    tweet={replyingTo}
+                    user={userIdToUserMap[replyingTo.author_id]}
                   />
-                </div>
+                )}
 
-                <div className="w-1/2 relative">
-                  <ReplyTextArea
-                    tweetDate={reply.created_at}
-                    tweetId={reply.id}
-                    isActive={isReplyActive}
-                    handleGoToNextReply={handleArrowDown}
-                  />
-                </div>
-              </section>
-            </ul>
-          </li>
-        );
-      })}
+                <section className="flex">
+                  <div className="w-1/2">
+                    <Tweet
+                      tweet={reply}
+                      user={userIdToUserMap[reply.author_id]}
+                      media={replies.includes.media}
+                    />
+                  </div>
+
+                  <div className="w-1/2 relative">
+                    <ReplyTextArea
+                      tweetDate={reply.created_at}
+                      tweetId={reply.id}
+                      isActive={isReplyActive}
+                      handleGoToNextReply={handleArrowDown}
+                    />
+                  </div>
+                </section>
+              </ul>
+            </li>
+          );
+        })}
     </div>
   );
 };
