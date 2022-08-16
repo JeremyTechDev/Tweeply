@@ -7,13 +7,13 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { Toaster } from 'react-hot-toast';
 
 import { RecentTweetsResponse } from '../@types/index';
+import Alert from '../components/Alert';
 import Tweet from '../components/Tweet';
 import Shortcuts from '../components/Shortcuts';
 import Replies from '../components/Replies';
 import { HOTKEY_OPTIONS } from '../helpers/contants';
 import { arrowDownControl, arrowUpControl } from '../helpers/arrowControls';
 import { getRequest, postRequest } from '../helpers/fetch';
-import Alert from '../components/Alert';
 
 interface T {
   tweets: RecentTweetsResponse | null;
@@ -69,10 +69,41 @@ const Home: NextPage<T> = ({ tweets, redirect }) => {
       );
   };
 
+  if (tweets?.meta.result_count === 0) {
+    return (
+      <>
+        <Alert
+          title="🤷‍♂️"
+          subTitle="Seams like you don't tweet that often. No tweets found."
+        />
+        <button
+          onClick={handleLogout}
+          className="block mx-auto bg-red-500 px-2 py-1 rounded-lg hover:bg-opacity-80"
+        >
+          Logout
+        </button>
+      </>
+    );
+  }
+
   const user = tweets?.includes?.users?.[0];
   if (!user && !redirect) {
-    router.reload();
+    return (
+      <>
+        <Alert
+          title="🙆‍♂️"
+          subTitle="I am having trouble here, I need your help. Can you refresh the page?"
+        />
+        <button
+          onClick={router.reload}
+          className="block mx-auto bg-accent px-2 py-1 rounded-lg hover:bg-opacity-80"
+        >
+          Refresh
+        </button>
+      </>
+    );
   }
+
   if (!user) {
     return <Alert title="⏱" subTitle="Loading..." />;
   }
@@ -192,7 +223,7 @@ export async function getServerSideProps({ req }) {
       cookie: req.headers.cookie,
     });
 
-    if (response.status === 401) {
+    if (response.status >= 400 && response.status < 500) {
       return {
         props: {
           redirect: '/api/auth/token?redirect=1',
