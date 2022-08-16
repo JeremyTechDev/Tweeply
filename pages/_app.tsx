@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Script from 'next/script';
 import Head from 'next/head';
 import Alert from '../components/Alert';
 import type { AppProps } from 'next/app';
@@ -45,19 +44,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>Tweeply</title>
       </Head>
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-8BJSXBHD9K"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
-                gtag('js', new Date());
-
-                gtag('config', 'G-8BJSXBHD9K');
-            `}
-      </Script>
       <Component {...pageProps} />
     </>
   );
