@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'https://tweeply-app.herokuapp.com/api'
+    ? 'http://tweeply-app.com/api'
     : 'http://localhost:3000/api';
 
 type methodType = 'POST' | 'GET' | 'PUT' | 'DELETE';

@@ -29,7 +29,7 @@ class MyDocument extends Document {
 
   title = 'Tweeply';
   subTitle = 'Interact with your Twitter followers easier & faster';
-  imgUrl = 'https://tweeply-app.herokuapp.com/frame.png';
+  imgUrl = 'http://tweeply-app.com/frame.png';
 
   render() {
     return (
@@ -43,7 +43,7 @@ class MyDocument extends Document {
           <meta property="og:description" content={this.subTitle} />
           <meta property="og:site_name" content="Tweeply" />
           <meta property="og:image" content={this.imgUrl} />
-          <meta property="og:url" content="https://tweeply-app.herokuapp.com" />
+          <meta property="og:url" content="http://tweeply-app.com" />
           <meta property="twitter:card" content="summary" />
           <meta property="twitter:site" content="@JeremyTechDev" />
           <meta property="twitter:title" content={this.title} />
