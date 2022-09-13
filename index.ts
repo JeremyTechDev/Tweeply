@@ -1,5 +1,6 @@
 import next from 'next';
 import dotenv from 'dotenv';
+import enforce from 'express-sslify';
 dotenv.config();
 
 import express from 'express';
@@ -20,6 +21,7 @@ const appHandler = app.getRequestHandler();
 app.prepare().then(() => {
   const server = express();
 
+  server.use(enforce.HTTPS({ trustProtoHeader: true }));
   server.use(express.json());
   server.use(cookieParser(COOKIE_SECRET));
 

@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'http://tweeply-app.com/api'
+    ? 'https://tweeply-app.com/api'
     : 'http://localhost:3000/api';
 
 type methodType = 'POST' | 'GET' | 'PUT' | 'DELETE';
@@ -11,7 +11,11 @@ const requestOptions = (
   headers?: HeadersInit,
 ): RequestInit => ({
   method: method || 'POST',
-  headers: { 'Content-Type': 'application/json', ...headers },
+  headers: {
+    'Content-Type': 'application/json',
+    mode: 'same-origin',
+    ...headers,
+  },
   ...(method !== 'GET' && { body: JSON.stringify(data) }),
 });
 

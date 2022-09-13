@@ -15,7 +15,7 @@ const IndexPage = () => {
         </Link>
       </header>
 
-      <section className="flex justify-center items-center w-screen h-[calc(100vh-96px)]">
+      <section className="flex justify-center items-center w-screen mt-20">
         <div className="flex flex-col justify-evenly items-start w-2/3 xl:w-1/3">
           <h2 className="text-6xl font-display font-bold">
             Interact with your <span className="text-accent">Twitter</span>{' '}

@@ -17,10 +17,9 @@ import { getRequest, postRequest } from '../helpers/fetch';
 
 interface T {
   tweetsData: RecentTweetsResponse | null;
-  redirect?: string;
 }
 
-const Home: NextPage<T> = ({ tweetsData, redirect }) => {
+const Home: NextPage<T> = ({ tweetsData }) => {
   const router = useRouter();
   const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
@@ -39,13 +38,6 @@ const Home: NextPage<T> = ({ tweetsData, redirect }) => {
       }) || []
     );
   }, [tweetsData, filter]);
-
-  useEffect(() => {
-    if (redirect) {
-      router.push(redirect);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useHotkeys('right', () => setSelectedTab('replies'), HOTKEY_OPTIONS);
   useHotkeys('left', () => setSelectedTab('tweets'), HOTKEY_OPTIONS);
@@ -76,9 +68,10 @@ const Home: NextPage<T> = ({ tweetsData, redirect }) => {
           localStorage.removeItem('sinceDate');
         }
       })
-      .catch(() =>
-        alert('Ops, something went wrong logging out, sorry for that'),
-      );
+      .catch((e) => {
+        console.error(e);
+        alert('Ops, something went wrong logging out, sorry for that');
+      });
   };
 
   if (tweetsData?.meta.result_count === 0) {
@@ -99,22 +92,6 @@ const Home: NextPage<T> = ({ tweetsData, redirect }) => {
   }
 
   const user = tweetsData?.includes?.users?.[0];
-  if (!user && !redirect) {
-    return (
-      <>
-        <Alert
-          title="🙆‍♂️"
-          subTitle="I am having trouble here, I need your help. Can you refresh the page?"
-        />
-        <button
-          onClick={router.reload}
-          className="block mx-auto bg-accent px-2 py-1 rounded-lg hover:bg-opacity-80"
-        >
-          Refresh
-        </button>
-      </>
-    );
-  }
 
   if (!user) {
     return <Alert title="⏱" subTitle="Loading..." />;
@@ -230,7 +207,7 @@ const Home: NextPage<T> = ({ tweetsData, redirect }) => {
   );
 };
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req, res }) {
   try {
     const response = await getRequest('/tweets', {
       cookie: req.headers.cookie,
@@ -238,9 +215,9 @@ export async function getServerSideProps({ req }) {
 
     if (response.status >= 400 && response.status < 500) {
       return {
-        props: {
-          redirect: '/api/auth/token?redirect=1',
-          tweets: null,
+        redirect: {
+          destination: '/api/auth/token?redirect=1',
+          permanent: false,
         },
       };
     }
