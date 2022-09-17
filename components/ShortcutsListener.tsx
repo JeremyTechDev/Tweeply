@@ -16,7 +16,7 @@ const TOAST_OPTIONS: ToastOptions = {
   position: 'top-right',
   style: {
     borderRadius: '10px',
-    background: '#55acee', // accent
+    background: '#55acee', // accent color
     color: '#fff',
     fontWeight: 'bold',
   },
@@ -43,6 +43,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId, setStatus }) => {
     HOTKEY_OPTIONS,
     [value, tweetId],
   );
+
   useHotkeys(
     SHORTCUT_KEYS.reply,
     (e) => {
@@ -63,6 +64,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId, setStatus }) => {
     HOTKEY_OPTIONS,
     [value, tweetId],
   );
+
   useHotkeys(
     SHORTCUT_KEYS.replyAndLike,
     () => {
@@ -106,6 +108,7 @@ const ShortcutsListener: FC<T> = ({ value, tweetId, setStatus }) => {
     HOTKEY_OPTIONS,
     [value, tweetId],
   );
+
   useHotkeys(
     SHORTCUT_KEYS.retweet,
     (e) => {

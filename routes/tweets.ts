@@ -6,18 +6,23 @@ import {
   EXPANSIONS,
   TWEETS_REQUIRED_FIELDS,
   USER_REQUIRED_FIELDS,
+  TWITTER_V2_API_ROUTE,
 } from '../helpers/contants';
 
 const router = express.Router();
 
-// Get list of recent tweets
+/**
+ * Get list of recent tweets
+ * @param withReplies Add '1' to include replies to the tweet
+ * @param limit Number of tweets to return (10-100)
+ */
 router.get('/', (req, res) => {
   try {
     const { screenName } = req.cookies.userData;
     const { withReplies, limit = 100 } = req.query;
 
     request.get(
-      `https://api.twitter.com/2/tweets/search/recent?query=(from:${screenName}${
+      `${TWITTER_V2_API_ROUTE}/tweets/search/recent?query=(from:${screenName}${
         withReplies === '1' ? '' : ' -is:reply'
       })&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}&max_results=${limit}`,
       {
@@ -36,7 +41,10 @@ router.get('/', (req, res) => {
   }
 });
 
-// Get tweet by Id
+/**
+ * Get single tweet by tweet id
+ * @param {required} tweetId The tweet Id
+ */
 router.get('/:tweetId', (req, res) => {
   try {
     const { tweetId } = req.params;
@@ -46,7 +54,7 @@ router.get('/:tweetId', (req, res) => {
     }
 
     request.get(
-      `https://api.twitter.com/2/tweets/${tweetId}/?${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}`,
+      `${TWITTER_V2_API_ROUTE}/tweets/${tweetId}/?${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
@@ -63,7 +71,11 @@ router.get('/:tweetId', (req, res) => {
   }
 });
 
-// Get replies of a tweet by its Id
+/**
+ * Get list of replies of a single tweet by Id
+ * @param {required} tweetId The tweet Id
+ * @param sinceId The starting tweet to add results from
+ */
 router.get('/:tweetId/conversation', (req, res) => {
   try {
     const { tweetId } = req.params;
@@ -76,7 +88,7 @@ router.get('/:tweetId/conversation', (req, res) => {
     const sinceIdParam = sinceId ? `&since_id=${sinceId}` : '';
 
     request.get(
-      `https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}${sinceIdParam}`,
+      `${TWITTER_V2_API_ROUTE}/tweets/search/recent?query=conversation_id:${tweetId}&${TWEETS_REQUIRED_FIELDS}&${USER_REQUIRED_FIELDS}&${EXPANSIONS}${sinceIdParam}`,
       {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
@@ -93,7 +105,11 @@ router.get('/:tweetId/conversation', (req, res) => {
   }
 });
 
-// Add reply on conversation with :tweetId
+/**
+ * Post a new reply to a Tweet by Id
+ * @param {required} tweetId The tweet Id
+ * @param {required} replyContent The content of the reply
+ */
 router.post('/:tweetId/conversation', (req, res) => {
   try {
     const { tweetId } = req.params;
@@ -128,7 +144,10 @@ router.post('/:tweetId/conversation', (req, res) => {
   }
 });
 
-// Like a tweet
+/**
+ * Like a tweet by Id
+ * @param {required} tweetId The tweet Id
+ */
 router.post('/:tweetId/like', (req, res) => {
   try {
     const { tweetId } = req.params;
@@ -153,7 +172,10 @@ router.post('/:tweetId/like', (req, res) => {
   }
 });
 
-// Dislike a tweet
+/**
+ * Dislike a tweet by Id
+ * @param {required} tweetId The tweet Id
+ */
 router.delete('/:tweetId/like', (req, res) => {
   try {
     const { tweetId } = req.params;
@@ -177,7 +199,10 @@ router.delete('/:tweetId/like', (req, res) => {
   }
 });
 
-// Retweet a tweet
+/**
+ * Retweet a tweet by Id
+ * @param {required} tweetId The tweet Id
+ */
 router.post('/:tweetId/retweet', (req, res) => {
   try {
     const { tweetId } = req.params;

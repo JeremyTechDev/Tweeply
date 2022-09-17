@@ -3,24 +3,20 @@ import ShortcutsListener from './ShortcutsListener';
 
 interface T {
   tweetId: string;
-  tweetDate: string;
   isActive: boolean;
   handleGoToNextReply: () => void;
 }
 
-const ReplyTextArea: FC<T> = ({
-  isActive,
-  tweetDate,
-  tweetId,
-  handleGoToNextReply,
-}) => {
+const ReplyTextArea: FC<T> = ({ isActive, tweetId, handleGoToNextReply }) => {
+  // The content of the reply to post
   const [value, setValue] = useState('');
+  // The status of the action, whether success of fail
   const [status, setStatus] = useState('');
   const ref = useRef(null);
 
   useEffect(() => {
     if (isActive && ref.current) {
-      // @ts-ignore focus() method is actually set
+      // @ts-ignore focus() method is set
       ref.current.focus();
     }
   }, [isActive, ref]);
@@ -28,23 +24,6 @@ const ReplyTextArea: FC<T> = ({
   const handleChangeStatus = (newStatus: string) => {
     setStatus(newStatus);
     handleGoToNextReply();
-
-    /**
-     * update 'sinceId' with the newest interaction tweet
-     * with this, the next request will bring only new tweets
-     */
-    const sinceId = localStorage.getItem('sinceId');
-    const sinceDate = localStorage.getItem('sinceDate');
-
-    if (!sinceId || !sinceDate) {
-      localStorage.setItem('sinceId', tweetId);
-      localStorage.setItem('sinceDate', tweetDate);
-    } else {
-      if (new Date(tweetDate) > new Date(sinceDate)) {
-        localStorage.setItem('sinceId', tweetId);
-        localStorage.setItem('sinceDate', tweetDate);
-      }
-    }
   };
 
   return (

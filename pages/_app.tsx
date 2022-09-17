@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   // Initial render only
   useEffect(detectSize, []);
 
-  // In case the screen resizes
+  // Get new window size on window resize
   useEffect(() => {
     window.addEventListener('resize', detectSize);
 

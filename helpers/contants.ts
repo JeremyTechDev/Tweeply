@@ -1,5 +1,7 @@
 import { Options } from 'react-hotkeys-hook';
 
+export const TWITTER_V2_API_ROUTE = 'https://api.twitter.com/2';
+
 export const EXPANSIONS =
   'expansions=author_id,referenced_tweets.id,attachments.media_keys';
 export const TWEETS_REQUIRED_FIELDS =
@@ -8,7 +10,6 @@ export const USER_REQUIRED_FIELDS =
   'user.fields=id,name,profile_image_url,username,url';
 
 export const HOTKEY_OPTIONS: Options = { enableOnTags: ['TEXTAREA'] };
-
 
 export const SHORTCUTS = [
   {

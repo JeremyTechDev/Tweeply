@@ -18,6 +18,7 @@ interface T {
 
 const Replies: FC<T> = ({ selectedTweetId, isActive, userId }) => {
   const [replies, setReplies] = useState<ConversationResponse>();
+  // Whether to hide the authenticated users' replies
   const [hideSelfReplies, setHideSelfReplies] = useState(false);
   const [selectedReplyIndex, setSelectedReplyIndex] = useState<number>(0);
   const [isError, setIsError] = useState(false);
@@ -49,9 +50,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive, userId }) => {
       return;
     }
 
-    const sinceId = localStorage.getItem('sinceId');
-    const sinceIdParam = sinceId ? `?sinceId=${sinceId}` : '';
-    getRequest(`/tweets/${selectedTweetId}/conversation/${sinceIdParam}`)
+    getRequest(`/tweets/${selectedTweetId}/conversation`)
       .then((res) => {
         if (res.status === 200) {
           return res.json();
@@ -67,6 +66,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive, userId }) => {
       .finally(() => setIsLoading(false));
   }, [selectedTweetId]);
 
+  // Object with [key: tweet id]: tweet data for faster lookups
   const tweetIdToTweetMap = useMemo(() => {
     const map: { [key: string]: iTweet } = {};
 
@@ -77,6 +77,7 @@ const Replies: FC<T> = ({ selectedTweetId, isActive, userId }) => {
     return map;
   }, [replies]);
 
+  // Object with [key: user id]: user data for faster lookups
   const userIdToUserMap = useMemo(() => {
     const map: { [key: string]: iUser } = {};
 
@@ -163,7 +164,6 @@ const Replies: FC<T> = ({ selectedTweetId, isActive, userId }) => {
 
                   <div className="w-1/2 relative">
                     <ReplyTextArea
-                      tweetDate={reply.created_at}
                       tweetId={reply.id}
                       isActive={isReplyActive}
                       handleGoToNextReply={handleArrowDown}

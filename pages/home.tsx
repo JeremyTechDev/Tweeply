@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -21,12 +21,17 @@ interface T {
 
 const Home: NextPage<T> = ({ tweetsData }) => {
   const router = useRouter();
-  const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
   const [selectedTweetIndex, setSelectedTweetIndex] = useState(0);
+  // Whether to include all tweets or only tweets with replies
+  const [filter, setFilter] = useState<'with-replies' | 'all'>('with-replies');
+  // Whether keyboard is focused on tweets tab (left) or replies tab (right)
   const [selectedTab, setSelectedTab] = useState<'tweets' | 'replies'>(
     'tweets',
   );
 
+  /**
+   * Filters tweets with no replies when filter === 'with-replies'
+   */
   const tweets = useMemo(() => {
     return (
       tweetsData?.data?.filter((tweets) => {
@@ -39,14 +44,18 @@ const Home: NextPage<T> = ({ tweetsData }) => {
     );
   }, [tweetsData, filter]);
 
+  // Keyboard event: focus on replies tab
   useHotkeys('right', () => setSelectedTab('replies'), HOTKEY_OPTIONS);
+  // Keyboard event: focus on tweets tab
   useHotkeys('left', () => setSelectedTab('tweets'), HOTKEY_OPTIONS);
+  // Keyboard event: focus on one tweet/reply up
   useHotkeys(
     'up',
     () => arrowUpControl(selectedTab === 'tweets', setSelectedTweetIndex),
     HOTKEY_OPTIONS,
     [selectedTab],
   );
+  // Keyboard event: focus on one tweet/reply down
   useHotkeys(
     'down',
     () =>
@@ -64,8 +73,6 @@ const Home: NextPage<T> = ({ tweetsData }) => {
       .then((res) => {
         if (res.status === 204) {
           router.push('/');
-          localStorage.removeItem('sinceId');
-          localStorage.removeItem('sinceDate');
         }
       })
       .catch((e) => {
@@ -74,6 +81,7 @@ const Home: NextPage<T> = ({ tweetsData }) => {
       });
   };
 
+  // If not tweets are found, show alert
   if (tweetsData?.meta.result_count === 0) {
     return (
       <>
@@ -91,8 +99,8 @@ const Home: NextPage<T> = ({ tweetsData }) => {
     );
   }
 
+  // Twitter includes the authenticated user data in the first index of the `users` list
   const user = tweetsData?.includes?.users?.[0];
-
   if (!user) {
     return <Alert title="⏱" subTitle="Loading..." />;
   }
@@ -209,10 +217,12 @@ const Home: NextPage<T> = ({ tweetsData }) => {
 
 export async function getServerSideProps({ req, res }) {
   try {
+    // Get recent tweets for the user
     const response = await getRequest('/tweets', {
       cookie: req.headers.cookie,
     });
 
+    // If not logged in, authenticate first with auto redirect
     if (response.status >= 400 && response.status < 500) {
       return {
         redirect: {

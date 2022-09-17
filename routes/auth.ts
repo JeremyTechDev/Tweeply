@@ -14,6 +14,7 @@ const TWITTER_ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token';
 
 const router = express.Router();
 
+// Create Twitter OAuth request token
 const oauth = new OAuth({
   consumer: {
     key: TWITTER_API_KEY,
@@ -25,9 +26,18 @@ const oauth = new OAuth({
   },
 });
 
+/**
+ * Request a new Twitter Token to log in
+ * @param {required} redirect Whether to automatically redirect to the Twitter Access page or not, any value will be true
+ */
 router.get('/token', async (req, res) => {
   try {
     const { redirect } = req.query;
+
+    if (!redirect) {
+      return res.status(400).send('`redirect` is missing');
+    }
+
     const requestData = {
       url: TWITTER_REQ_TOKEN_URL,
       method: 'POST',
@@ -56,7 +66,7 @@ router.get('/token', async (req, res) => {
         if (redirect) {
           return res.redirect(url);
         }
-        res.send({ redirentUrl: url });
+        res.send({ redirectUrl: url });
       },
     );
   } catch (error) {
@@ -64,6 +74,10 @@ router.get('/token', async (req, res) => {
   }
 });
 
+/**
+ * Url Twitter will redirect to after auth success.
+ * Gets user data and redirect to App's homepage
+ */
 router.get('/twitter-callback', (req, res) => {
   try {
     const { oauth_token, oauth_verifier } = req.query;
@@ -110,6 +124,9 @@ router.get('/twitter-callback', (req, res) => {
   }
 });
 
+/**
+ * Removes auth token and to logout
+ */
 router.post('/logout', (req, res) => {
   res.clearCookie('userData');
   res.clearCookie('tokenSecret');
