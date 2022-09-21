@@ -1,4 +1,4 @@
-# Swift Reply
+# Tweeply
 
 To help Twitter Content Creators reply to all replies on their tweets 10x faster (no need for a mouse).
 
@@ -19,12 +19,18 @@ TWITTER_CALLBACK_URL=http://localhost:<port>/api/auth/twitter-callback # this ur
 
 - Install dependencies: `yarn install`
 
-- Run the TypeScript script to generate JS files"
+- Run the TypeScript script to generate JS files
 
 ```bash
 yarn run tsc
 # or
-yarn run tsc:w # to keep watching for changes
+yarn run tsc:w # to recompile on change
 ```
 
 - Run the app on development mode: `yarn dev`
+
+## Contributing
+
+You can help to the development of Tweeply by simple cloning and repo, making some changes and opening a Pull Request. I will check it as soon as possible and let you know how to continue with it.
+
+Of course, you can always just create an issue and I (or anyone else) will try to give it a look as soon as possible.
