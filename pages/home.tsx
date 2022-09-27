@@ -72,6 +72,7 @@ const Home: NextPage<T> = ({ tweetsData }) => {
     postRequest('/auth/logout')
       .then((res) => {
         if (res.status === 204) {
+          localStorage.clear();
           router.push('/');
         }
       })
@@ -181,13 +182,11 @@ const Home: NextPage<T> = ({ tweetsData }) => {
                     isTweetActive ? 'tweet-selected' : ''
                   }`}
                 >
-                  <ul>
-                    <Tweet
-                      tweet={tweet}
-                      user={user}
-                      media={tweetsData.includes.media}
-                    />
-                  </ul>
+                  <Tweet
+                    tweet={tweet}
+                    user={user}
+                    media={tweetsData.includes.media}
+                  />
                 </li>
               );
             })}

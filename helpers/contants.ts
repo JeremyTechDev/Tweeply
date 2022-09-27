@@ -52,3 +52,11 @@ export const SHORTCUT_KEYS = {
   // quote: SHORTCUTS[4].keys,
   // skip: SHORTCUTS[5].keys,
 };
+
+export const STATUS_CODES = {
+  OK: 200,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  NOT_AUTHORIZED: 401,
+  SERVER_ERROR: 500,
+};

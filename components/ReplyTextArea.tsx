@@ -11,7 +11,7 @@ const ReplyTextArea: FC<T> = ({ isActive, tweetId, handleGoToNextReply }) => {
   // The content of the reply to post
   const [value, setValue] = useState('');
   // The status of the action, whether success of fail
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState(localStorage.getItem(tweetId) ?? '');
   const ref = useRef(null);
 
   useEffect(() => {
@@ -24,6 +24,8 @@ const ReplyTextArea: FC<T> = ({ isActive, tweetId, handleGoToNextReply }) => {
   const handleChangeStatus = (newStatus: string) => {
     setStatus(newStatus);
     handleGoToNextReply();
+
+    localStorage.setItem(tweetId, newStatus);
   };
 
   return (

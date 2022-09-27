@@ -3,6 +3,7 @@ import express from 'express';
 import get from 'simple-get';
 import OAuth from 'oauth-1.0a';
 import crypto from 'crypto';
+import { STATUS_CODES } from '../helpers/contants';
 
 const TWITTER_CALLBACK_URL = process.env.TWITTER_CALLBACK_URL as string;
 const TWITTER_API_KEY = process.env.TWITTER_API_KEY as string;
@@ -35,7 +36,7 @@ router.get('/token', async (req, res) => {
     const { redirect } = req.query;
 
     if (!redirect) {
-      return res.status(400).send('`redirect` is missing');
+      return res.status(STATUS_CODES.BAD_REQUEST).send('`redirect` is missing');
     }
 
     const requestData = {
@@ -54,7 +55,10 @@ router.get('/token', async (req, res) => {
         headers: oauth.toHeader(oauth.authorize(requestData)),
       },
       (err: object | null, _response: unknown, data: object) => {
-        if (err) return res.status(400).send('Ops! something went wrong there');
+        if (err)
+          return res
+            .status(STATUS_CODES.BAD_REQUEST)
+            .send('Ops! something went wrong there');
 
         const urlResponse = new URLSearchParams(data.toString());
         const token = urlResponse.get('oauth_token');
@@ -70,7 +74,7 @@ router.get('/token', async (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -84,7 +88,7 @@ router.get('/twitter-callback', (req, res) => {
     const { tokenSecret } = req.cookies;
 
     if (!oauth_token || !oauth_verifier || !tokenSecret) {
-      return res.send(401);
+      return res.send(STATUS_CODES.NOT_AUTHORIZED);
     }
 
     const requestData = {
@@ -105,7 +109,10 @@ router.get('/twitter-callback', (req, res) => {
         headers: oauth.toHeader(oauth.authorize(requestData)),
       },
       (err: object | null, _response: unknown, data: object) => {
-        if (err) return res.status(400).send('Ops! something went wrong there');
+        if (err)
+          return res
+            .status(STATUS_CODES.BAD_REQUEST)
+            .send('Ops! something went wrong there');
 
         const urlResponse = new URLSearchParams(data.toString());
         const token = urlResponse.get('oauth_token');
@@ -120,7 +127,7 @@ router.get('/twitter-callback', (req, res) => {
       },
     );
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -130,7 +137,9 @@ router.get('/twitter-callback', (req, res) => {
 router.post('/logout', (req, res) => {
   res.clearCookie('userData');
   res.clearCookie('tokenSecret');
-  return res.status(204).send({ message: 'Logout successful' });
+  return res
+    .status(STATUS_CODES.NO_CONTENT)
+    .send({ message: 'Logout successful' });
 });
 
 export default router;

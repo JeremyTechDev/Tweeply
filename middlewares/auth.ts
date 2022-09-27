@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { STATUS_CODES } from '../helpers/contants';
 
 const TWITTER_API_KEY = process.env.TWITTER_API_KEY as string;
 const TWITTER_API_SECRET = process.env.TWITTER_API_SECRET as string;
@@ -9,7 +10,9 @@ const authMiddleware: RequestHandler = (req, res, next) => {
     const { token, tokenSecret } = req?.cookies?.userData || {};
 
     if (!token || !tokenSecret) {
-      return res.status(401).send({ error: 'Not Authorized' });
+      return res
+        .status(STATUS_CODES.NOT_AUTHORIZED)
+        .send({ error: 'Not Authorized' });
     }
 
     const authData = {
@@ -22,7 +25,7 @@ const authMiddleware: RequestHandler = (req, res, next) => {
     res.locals.authData = authData;
     next();
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 };
 

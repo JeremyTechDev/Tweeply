@@ -8,6 +8,7 @@ import {
   USER_REQUIRED_FIELDS,
   TWITTER_V2_API_ROUTE,
 } from '../helpers/contants';
+import { STATUS_CODES } from '../helpers/contants';
 
 const router = express.Router();
 
@@ -29,15 +30,15 @@ router.get('/', (req, res) => {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
       (_, response, body) => {
-        if (response.statusCode !== 200) {
-          return res.status(400).send(body);
+        if (response.statusCode !== STATUS_CODES.OK) {
+          return res.status(STATUS_CODES.BAD_REQUEST).send(body);
         }
 
         return res.send(body);
       },
     );
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -50,7 +51,9 @@ router.get('/:tweetId', (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-      res.status(400).send({ error: 'No `tweetId` was sent' });
+      res
+        .status(STATUS_CODES.BAD_REQUEST)
+        .send({ error: 'No `tweetId` was sent' });
     }
 
     request.get(
@@ -59,15 +62,15 @@ router.get('/:tweetId', (req, res) => {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
       (_, response, body) => {
-        if (response.statusCode !== 200) {
-          return res.status(400).send(body);
+        if (response.statusCode !== STATUS_CODES.OK) {
+          return res.status(STATUS_CODES.BAD_REQUEST).send(body);
         }
 
         return res.send(body);
       },
     );
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -82,7 +85,9 @@ router.get('/:tweetId/conversation', (req, res) => {
     const { sinceId } = req.query;
 
     if (!tweetId) {
-      res.status(400).send({ error: 'No `tweetId` was sent' });
+      res
+        .status(STATUS_CODES.BAD_REQUEST)
+        .send({ error: 'No `tweetId` was sent' });
     }
 
     const sinceIdParam = sinceId ? `&since_id=${sinceId}` : '';
@@ -93,15 +98,15 @@ router.get('/:tweetId/conversation', (req, res) => {
         headers: { Authorization: `Bearer ${process.env.TWITTER_API_BEARER}` },
       },
       (err, response, body) => {
-        if (response.statusCode !== 200) {
-          res.status(400).send({ error: err, data: body });
+        if (response.statusCode !== STATUS_CODES.OK) {
+          res.status(STATUS_CODES.BAD_REQUEST).send({ error: err, data: body });
         }
 
         res.send(body);
       },
     );
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -132,15 +137,15 @@ router.post('/:tweetId/conversation', (req, res) => {
         auto_populate_reply_metadata: true,
       },
       (_, body, response) => {
-        if (response.statusCode !== 200) {
-          return res.status(400).send(body);
+        if (response.statusCode !== STATUS_CODES.OK) {
+          return res.status(STATUS_CODES.BAD_REQUEST).send(body);
         }
 
         return res.send(body);
       },
     );
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -153,22 +158,25 @@ router.post('/:tweetId/like', (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-      res.status(400).send('No `tweetId` was sent');
+      res.status(STATUS_CODES.BAD_REQUEST).send('No `tweetId` was sent');
     }
 
     const authData = res.locals.authData as Twit.Options;
     const T = new Twit(authData);
 
     T.post('favorites/create', { id: tweetId }, (_, body, response) => {
-      if (response.statusCode !== 200 && response.statusCode !== 403) {
+      if (
+        response.statusCode !== STATUS_CODES.OK &&
+        response.statusCode !== 403
+      ) {
         // 403 is already liked
-        return res.status(400).send(body);
+        return res.status(STATUS_CODES.BAD_REQUEST).send(body);
       }
 
       return res.send(body);
     });
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -181,21 +189,21 @@ router.delete('/:tweetId/like', (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-      res.status(400).send('No `tweetId` was sent');
+      res.status(STATUS_CODES.BAD_REQUEST).send('No `tweetId` was sent');
     }
 
     const authData = res.locals.authData as Twit.Options;
     const T = new Twit(authData);
 
     T.post('favorites/destroy', { id: tweetId }, (_, body, response) => {
-      if (response.statusCode !== 200) {
-        return res.status(400).send(body);
+      if (response.statusCode !== STATUS_CODES.OK) {
+        return res.status(STATUS_CODES.BAD_REQUEST).send(body);
       }
 
       return res.send(body);
     });
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
@@ -208,21 +216,21 @@ router.post('/:tweetId/retweet', (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-      res.status(400).send('No `tweetId` was sent');
+      res.status(STATUS_CODES.BAD_REQUEST).send('No `tweetId` was sent');
     }
 
     const authData = res.locals.authData as Twit.Options;
     const T = new Twit(authData);
 
     T.post('statuses/retweet', { id: tweetId }, (_, body, response) => {
-      if (response.statusCode !== 200) {
-        return res.status(400).send(body);
+      if (response.statusCode !== STATUS_CODES.OK) {
+        return res.status(STATUS_CODES.BAD_REQUEST).send(body);
       }
 
       return res.send(body);
     });
   } catch (error) {
-    return res.status(500).send({ error });
+    return res.status(STATUS_CODES.SERVER_ERROR).send({ error });
   }
 });
 
